@@ -1,0 +1,1 @@
+docker build -t wma:0.0.1-SNAPSHOT .

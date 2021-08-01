@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: DEV
+
+gear:
+  neo4j:
+    url: 'neo4j://localhost:7687'
+    authToken:
+      username: neo4j
+      password: 1303595

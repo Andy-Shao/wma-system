@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Words Memory Assistance</title>
+</head>
+<body>
+<h1>Words Memory Assistance -- <span th:text="${systemType}"/></h1>
+<hr/>
+<table border="1">
+    <thead>
+    <tr>
+        <td>UUID</td>
+        <td>Description</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record: ${memoryRecords}">
+        <td th:text="${record.uuid}"/>
+        <td th:text="${record.description}"/>
+        <td>DELETE</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
