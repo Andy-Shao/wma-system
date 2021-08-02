@@ -19,7 +19,7 @@ class CreateMemoryRecord extends React.Component {
   };
 
   isPassFormCheck() {
-    return this.state.description != '';
+    return this.state.description !== '';
   }
 
   onClickSubmit = (event) => {
