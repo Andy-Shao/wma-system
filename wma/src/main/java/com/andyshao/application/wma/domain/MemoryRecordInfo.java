@@ -1,9 +1,8 @@
 package com.andyshao.application.wma.domain;
 
+import com.github.andyshao.lang.AutoIncreaseArray;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Set;
 
 /**
  * Title: <br>
@@ -19,5 +18,5 @@ public class MemoryRecordInfo {
     private String uuid;
     private String description;
     private String currentPageId;
-    private Set<String> pageSequence;
+    private AutoIncreaseArray<String> pageSequence;
 }

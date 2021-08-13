@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 class MemoryRecords extends React.Component {
   state = {
@@ -28,15 +29,21 @@ class MemoryRecords extends React.Component {
 
   onClickDelete = (event) => {
     const uuid = event.target.value;
-    axios.delete('http://localhost:8080/memoryRecord/remove/' + uuid)
-      .then(response => {
-        alert('Delete Success!');
-        //window.location.reload(false);
-        this.getData();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    if(window.confirm('Do you want to delete it?')) {
+      axios.delete('http://localhost:8080/memoryRecord/remove/' + uuid)
+        .then(response => {
+          alert('Delete Success!');
+          //window.location.reload(false);
+          this.getData();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+    else {
+      //alert('No');
+    }
+
   }
 
   render() {
@@ -56,7 +63,10 @@ class MemoryRecords extends React.Component {
         <tr>
           <td>{record.uuid}</td>
           <td>{record.description}</td>
-          <td><button onClick={this.onClickDelete} value={record.uuid}>DELETE</button></td>
+          <td>
+            <button onClick={this.onClickDelete} value={record.uuid}>DELETE</button> |
+            <Link to={`/pageDetail?recordId=${record.uuid}`}>Details</Link>
+          </td>
         </tr>
       ))}
       </tbody>

@@ -12,6 +12,7 @@ import com.andyshao.application.wma.neo4j.domain.Material;
 import com.andyshao.application.wma.neo4j.domain.Page;
 import com.github.andyshao.lang.StringOperation;
 import com.github.andyshao.neo4j.annotation.Neo4jTransaction;
+import com.github.andyshao.util.CollectionOperation;
 import com.github.andyshao.util.EntityOperation;
 import org.neo4j.driver.async.AsyncTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -85,7 +87,7 @@ public class PageService {
         final Page page = new Page();
         EntityOperation.copyProperties(p, page);
         return this.pageDao.saveOrUpdate(page, tx)
-                .thenMany(Flux.fromIterable(p.getGroups()))
+                .thenMany(Flux.fromIterable(CollectionOperation.isEmptyOrNull(p.getGroups()) ? Collections.emptyList(): p.getGroups()))
                 .flatMap(g -> {
                     if(StringOperation.isTrimEmptyOrNull(g.getUuid())) g.setUuid(UUID.randomUUID().toString());
                     final Group group = new Group();

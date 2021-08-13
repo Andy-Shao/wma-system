@@ -23,6 +23,9 @@ public interface MemoryRecordDao {
     @Neo4jSql(sql = "MATCH (n:MemoryRecord) RETURN n")
     Flux<MemoryRecord> findRecords(CompletionStage<AsyncTransaction> tx);
 
+    @Neo4jSql(sql = "MATCH (n:MemoryRecord {uuid: $id}) RETURN n")
+    Mono<MemoryRecord> findRecordById(@Param("id") String uuid, CompletionStage<AsyncTransaction> tx);
+
     @Neo4jSql(sql = "MERGE (n:MemoryRecord {uuid: $mr_uuid}) " +
             "ON CREATE SET n.currentPageId = $mr_currentPageId, n.pageSequence = $mr_pageSequence, n.description = $mr_description " +
             "ON MATCH SET n.currentPageId = $mr_currentPageId, n.pageSequence = $mr_pageSequence, n.description = $mr_description " +

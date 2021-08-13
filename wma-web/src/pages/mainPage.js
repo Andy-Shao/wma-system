@@ -11,7 +11,6 @@ class MainPage extends React.Component {
       <div>
         <AppTitle />
         <MemoryRecords />
-        <Link to="/pageDetail">Page Details</Link> | 
         <Link to="/createMemoryRecord"> Create Memory Record </Link>
       </div>
     );
