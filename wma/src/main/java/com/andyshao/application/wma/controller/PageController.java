@@ -39,4 +39,10 @@ public class PageController {
                                    @RequestParam(value = "groupId", required = false) String groupId) {
         return this.pageService.addGroup(pageId, groupId, null);
     }
+
+    @DeleteMapping("/removeGroup")
+    @ResponseBody
+    public Mono<Void> removeGroup(@RequestParam("pageId")String pageId, @RequestParam("groupId")String groupId) {
+        return this.pageService.removeGroup(pageId, groupId, null);
+    }
 }

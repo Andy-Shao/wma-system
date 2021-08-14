@@ -75,6 +75,7 @@ class MemoryRecordDetail extends React.Component {
       axios.delete('http://localhost:8080/memoryRecord/removePage?recordId=' + this.state.record.uuid + '&pageId=' + event.target.value)
         .then(response => { 
           console.log(response);
+          alert(response.data);
           this.getData();
         })
         .catch(error => { 
@@ -92,7 +93,7 @@ class MemoryRecordDetail extends React.Component {
         <AppTitle />
         <h3>Memory Record Id: {this.state.record.uuid} | Description: {this.state.record.description}</h3>
         <button onClick={this.onAddPage}>Add Page</button>
-        <PageList pages={this.state.pages} onDelete={this.onDeletePage}/>
+        <PageList recordId={this.state.record.uuid} pages={this.state.pages} onDelete={this.onDeletePage}/>
         <Link to="/">Main Page</Link>
       </div>
     );

@@ -17,7 +17,7 @@ class PageList extends React.Component {
         <td>{page.uuid}</td>
         <td>
           <button onClick={this.props.onDelete} value={page.uuid}>DELETE</button> |
-          <Link to={ '/pageDetail?pageId=' + page.uuid}>Detail</Link>
+          <Link to={ '/pageDetail?pageId=' + page.uuid +'&recordId=' + this.props.recordId}>Detail</Link>
         </td>
         </tr>
       )) }

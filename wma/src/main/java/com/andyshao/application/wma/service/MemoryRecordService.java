@@ -113,18 +113,39 @@ public class MemoryRecordService {
     }
 
     @Neo4jTransaction
-    public Mono<Void> removePage(final String recordId, final String pageId, final CompletionStage<AsyncTransaction> tx) {
-        return this.pageDao.removePageById(pageId, tx)
-                .then(this.memoryRecordDao.findRecordById(recordId, tx))
-                .flatMap(record -> {
-                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
-                    final int index = pageSequence.indexOf(pageId);
-                    if(index != -1) {
-                        pageSequence.remove(index);
-                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx);
+    public Mono<String> removePage(final String recordId, final String pageId, final CompletionStage<AsyncTransaction> tx) {
+        return this.pageDao.findGroups(pageId, tx)
+                .collectList()
+                .flatMap(groups -> {
+                    if(CollectionOperation.isEmptyOrNull(groups)) {
+                        return this.pageDao.removePageById(pageId, tx)
+                                .then(this.memoryRecordDao.findRecordById(recordId, tx))
+                                .flatMap(record -> {
+                                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+                                    final int index = pageSequence.indexOf(pageId);
+                                    if(index != -1) {
+                                        pageSequence.remove(index);
+                                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx)
+                                                .then(Mono.just("Delete Success!"));
+                                    }
+                                    return Mono.just("Does not need to be left out!");
+                                });
                     }
-                    return Mono.just(record);
-                })
-                .then();
+                    else {
+                        return Mono.just("Page includes groups, therefore it cannot be omitted!");
+                    }
+                });
+//        return this.pageDao.removePageById(pageId, tx)
+//                .then(this.memoryRecordDao.findRecordById(recordId, tx))
+//                .flatMap(record -> {
+//                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+//                    final int index = pageSequence.indexOf(pageId);
+//                    if(index != -1) {
+//                        pageSequence.remove(index);
+//                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx);
+//                    }
+//                    return Mono.just(record);
+//                })
+//                .then();
     }
 }

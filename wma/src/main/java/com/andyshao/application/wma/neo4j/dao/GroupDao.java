@@ -24,12 +24,15 @@ public interface GroupDao {
     @Neo4jSql(sql = "MERGE (n:Group {uuid: $id}) RETURN n")
     Mono<Group> findOrCreateById(@Param("id")String uuid, CompletionStage<AsyncTransaction> tx);
 
-    @Neo4jSql(sql = "MATCH (n:Group {uuid: $g_uuid}), (m:Material {uuid: $m_uuid}) MERGE (n) -[:Include]-> (m) RETURN n")
-    Mono<Group> addMaterial(@Param("g")Group group, @Param("m")Material material, CompletionStage<AsyncTransaction> tx);
+    @Neo4jSql(sql = "MATCH (n:Group {uuid: $gId}), (m:Material {uuid: $mId}) MERGE (n) -[:Include]-> (m) RETURN n")
+    Mono<Group> addMaterial(@Param("gId")String groupId, @Param("mId")String materialId, CompletionStage<AsyncTransaction> tx);
 
-    @Neo4jSql(sql = "MATCH (n:Group {uuid: $g_uuid}) -[:Include]-> (m:Material) RETURN m")
-    Flux<Material> findMaterials(@Param("g")Group group, CompletionStage<AsyncTransaction> tx);
+    @Neo4jSql(sql = "MATCH (n:Group {uuid: $gId}) -[:Include]-> (m:Material) RETURN m")
+    Flux<Material> findMaterials(@Param("gId")String groupId, CompletionStage<AsyncTransaction> tx);
 
-    @Neo4jSql(sql = "MATCH (n:Group {uuid: $g_uuid}) -[r:Include]-> (m:Material {uuid: $m_uuid}) DELETE r")
-    Mono<Void> removeMaterial(@Param("g")Group group, @Param("m")Material material, CompletionStage<AsyncTransaction> tx);
+    @Neo4jSql(sql = "MATCH (n:Group {uuid: $gId}) -[r:Include]-> (m:Material {uuid: $mId}) DELETE r")
+    Mono<Void> removeMaterial(@Param("gId")String groupId, @Param("mId")String materialId, CompletionStage<AsyncTransaction> tx);
+
+    @Neo4jSql(sql = "MATCH (n:Group {uuid: $gId}) DELETE n")
+    Mono<Void> removeGroupById(@Param("gId")String groupId, CompletionStage<AsyncTransaction> tx);
 }

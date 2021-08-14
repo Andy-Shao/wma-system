@@ -56,7 +56,7 @@ public class MemoryRecordController {
 
     @DeleteMapping("/removePage")
     @ResponseBody
-    public Mono<Void> removePage(@RequestParam("recordId") String recordId, @RequestParam("pageId") String pageId) {
+    public Mono<String> removePage(@RequestParam("recordId") String recordId, @RequestParam("pageId") String pageId) {
         return this.memoryRecordService.removePage(recordId, pageId, null);
     }
 }

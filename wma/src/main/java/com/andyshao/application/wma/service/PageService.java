@@ -59,7 +59,7 @@ public class PageService {
                 .flatMap(page -> {
                     return this.pageDao.findGroups(pageId, tx)
                             .flatMap(group -> {
-                                return this.groupDao.findMaterials(group, tx)
+                                return this.groupDao.findMaterials(group.getUuid(), tx)
                                         .map(material -> {
                                             final MaterialInfo materialInfo = new MaterialInfo();
                                             EntityOperation.copyProperties(material, materialInfo);
@@ -101,7 +101,7 @@ public class PageService {
                                 final Material material = new Material();
                                 EntityOperation.copyProperties(m, material);
                                 return this.materialDao.saveOrUpdate(material, tx)
-                                        .flatMap(it -> this.groupDao.addMaterial(group, it, tx));
+                                        .flatMap(it -> this.groupDao.addMaterial(group.getUuid(), it.getUuid(), tx));
                             })
                             .then(Mono.just(group));
                 })
@@ -141,5 +141,12 @@ public class PageService {
                                 return pageInfo;
                             });
                 });
+    }
+
+    @Neo4jTransaction
+    public Mono<Void> removeGroup(String pageId, String groupId, final CompletionStage<AsyncTransaction> tx) {
+        return this.pageDao.removeGroup(pageId, groupId, tx)
+                .then(this.groupDao.removeGroupById(groupId, tx))
+                .then();
     }
 }

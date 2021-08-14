@@ -7,8 +7,8 @@ import MainPage from "./pages/mainPage.js"
 import PageDetail from "./pages/pageDetail.js"
 import NotFoundPage from "./pages/notFoundPage.js"
 import CreateMemoryRecord from "./pages/createMemoryRecord.js"
-import CreatePage from "./pages/createPage.js"
 import MemoryRecordDetail from "./pages/memoryRecordDetail.js"
+import MaterialManagement from "./pages/materialManagement.js"
 
 class App extends React.Component {
 
@@ -20,7 +20,7 @@ class App extends React.Component {
           <Route exact path="/pageDetail" component={PageDetail} />
           <Route exact path="/memoryRecordDetail" component={MemoryRecordDetail} />
           <Route exact path="/createMemoryRecord" component={CreateMemoryRecord} />
-          <Route exact page="/createPage" component={CreatePage} />
+          <Route exact page="/materialManagement" component={MaterialManagement} />
           <Route exact path="/404" component={NotFoundPage}/>
           <Redirect to="/404"/>
         </Switch>

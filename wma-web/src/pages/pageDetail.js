@@ -21,7 +21,7 @@ class GroupList extends React.Component {
         <tr>
           <td>{group.uuid}</td>
           <td>
-            <button>DELETE</button> |
+            <button value={group.uuid} onClick={this.props.onDeleteGroup}>DELETE</button> |
           </td>
         </tr>
         ))}
@@ -34,6 +34,7 @@ class GroupList extends React.Component {
 
 class PageDetail extends React.Component {
   state = { 
+    recordId: '',
     pageId: '',
     page: { 
       groups: [ ]
@@ -47,7 +48,11 @@ class PageDetail extends React.Component {
   getData() {
     const queryParams = new URLSearchParams(window.location.search)
     const id = queryParams.get('pageId');
-    this.setState({ pageId: id });
+    const recId = queryParams.get('recordId');
+    this.setState({ 
+      pageId: id,
+      recordId: recId
+    });
 
     axios.get('http://localhost:8080/page/getPage/'+id)
       .then(response => { 
@@ -76,13 +81,30 @@ class PageDetail extends React.Component {
       });
   }
 
+  onDeleteGroup = (event) => {
+    if(window.confirm('Do you want to delete the group?')) {
+      axios.delete('http://localhost:8080/page/removeGroup?pageId=' + this.state.page.uuid + '&groupId=' + event.target.value)
+        .then(response => { 
+          alert('DELETE SUCCESS!');
+          console.log(response);
+          this.getData();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+    else {
+      //Do Nothing!!
+    }
+  }
+
   render(){
     return (
       <div>
         <AppTitle />
-        <h3>Page Id: {this.state.page.uuid}</h3>
+        <h3>Page Id: <Link to={'/memoryRecordDetail?recordId=' + this.state.recordId}>{this.state.page.uuid}</Link></h3>
         <button onClick={this.onAddGroup}>Add Group</button>
-        <GroupList page={this.state.page}/>
+        <GroupList page={this.state.page} onDeleteGroup={this.onDeleteGroup}/>
         <Link to="/">Main Page</Link>
       </div>
     );
