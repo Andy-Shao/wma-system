@@ -73,12 +73,21 @@ public class MemoryRecordService {
     }
 
     @Neo4jTransaction
-    public Mono<Void> removeRecord(String uuid, CompletionStage<AsyncTransaction> tx) {
-        return this.memoryRecordDao.removeMemoryRecord(uuid, tx);
+    public Mono<String> removeRecord(String uuid, CompletionStage<AsyncTransaction> tx) {
+        return this.memoryRecordDao.findRecordById(uuid, tx)
+                .flatMap(memoryRecord -> {
+                    if(CollectionOperation.isEmptyOrNull(memoryRecord.getPageSequence())) {
+                        return this.memoryRecordDao.removeMemoryRecord(uuid, tx)
+                                .then(Mono.just("Remove Success!"));
+                    }
+                    else {
+                        return Mono.just("Record includes pages, consequently it cannot be eliminated.");
+                    }
+                });
     }
 
     @Neo4jTransaction
-    public Mono<MemoryRecordInfo> addPage(final String recordId, String pageId, CompletionStage<AsyncTransaction> tx) {
+    public Mono<MemoryRecordInfo> addPage(final String recordId, String pageId,final CompletionStage<AsyncTransaction> tx) {
         final AtomicReference<String> pageUuid = new AtomicReference<>();
         if(StringOperation.isTrimEmptyOrNull(pageId)) pageUuid.set(UUID.randomUUID().toString());
         else pageUuid.set(pageId);
@@ -101,5 +110,21 @@ public class MemoryRecordService {
                             });
                 })
                 .map(memoryRecord -> EntityOperation.copyProperties(memoryRecord, new MemoryRecordInfo()));
+    }
+
+    @Neo4jTransaction
+    public Mono<Void> removePage(final String recordId, final String pageId, final CompletionStage<AsyncTransaction> tx) {
+        return this.pageDao.removePageById(pageId, tx)
+                .then(this.memoryRecordDao.findRecordById(recordId, tx))
+                .flatMap(record -> {
+                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+                    final int index = pageSequence.indexOf(pageId);
+                    if(index != -1) {
+                        pageSequence.remove(index);
+                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx);
+                    }
+                    return Mono.just(record);
+                })
+                .then();
     }
 }

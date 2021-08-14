@@ -36,7 +36,7 @@ public class MemoryRecordController {
 
     @DeleteMapping("/remove/{id}")
     @ResponseBody
-    public Mono<Void> removeRecord(@PathVariable("id") String uuid) {
+    public Mono<String> removeRecord(@PathVariable("id") String uuid) {
         return this.memoryRecordService.removeRecord(uuid, null);
     }
 
@@ -52,5 +52,11 @@ public class MemoryRecordController {
     public Mono<MemoryRecordInfo> addPage(@RequestParam("recordId") String recordId,
                                           @RequestParam(value = "pageId", required = false) String pageId) {
         return this.memoryRecordService.addPage(recordId, pageId, null);
+    }
+
+    @DeleteMapping("/removePage")
+    @ResponseBody
+    public Mono<Void> removePage(@RequestParam("recordId") String recordId, @RequestParam("pageId") String pageId) {
+        return this.memoryRecordService.removePage(recordId, pageId, null);
     }
 }
