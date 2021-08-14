@@ -43,7 +43,7 @@ public class MemoryRecordController {
     @PostMapping(value = "/saveOrUpdate")
     @ResponseBody
     public Mono<Result<Void>> saveOrUpdateRecord(@RequestBody MemoryRecordInfo memoryRecordInfo) {
-        return this.memoryRecordService.saveOrUpdateMemoryRecord(memoryRecordInfo, null)
+        return this.memoryRecordService.saveOrUpdateMemoryRecordOpt(memoryRecordInfo, null)
                 .then(Mono.just(Result.success()));
     }
 }

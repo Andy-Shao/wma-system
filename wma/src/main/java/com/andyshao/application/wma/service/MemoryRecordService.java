@@ -6,6 +6,7 @@ import com.andyshao.application.wma.neo4j.domain.MemoryRecord;
 import com.github.andyshao.lang.AutoIncreaseArray;
 import com.github.andyshao.lang.StringOperation;
 import com.github.andyshao.neo4j.annotation.Neo4jTransaction;
+import com.github.andyshao.util.CollectionOperation;
 import com.github.andyshao.util.EntityOperation;
 import com.google.common.collect.Sets;
 import org.neo4j.driver.async.AsyncTransaction;
@@ -44,14 +45,15 @@ public class MemoryRecordService {
     }
 
     @Neo4jTransaction
-    public Mono<Void> saveOrUpdateMemoryRecord(MemoryRecordInfo recordInfo, CompletionStage<AsyncTransaction> tx) {
+    public Mono<Void> saveOrUpdateMemoryRecordOpt(MemoryRecordInfo recordInfo, CompletionStage<AsyncTransaction> tx) {
         if(StringOperation.isTrimEmptyOrNull(recordInfo.getUuid())) recordInfo.setUuid(UUID.randomUUID().toString());
         omitRepeatItem(recordInfo.getPageSequence());
-        return this.memoryRecordDao.saveOrUpdate(EntityOperation.copyProperties(recordInfo, new MemoryRecord()), tx)
+        return this.memoryRecordDao.saveOrUpdateOpt(EntityOperation.copyProperties(recordInfo, new MemoryRecord()), tx)
                 .then();
     }
 
     private void omitRepeatItem(AutoIncreaseArray<String> pageSequence) {
+        if(CollectionOperation.isEmptyOrNull(pageSequence)) return;
         final HashSet<String> tmp = Sets.newHashSet();
         for(int i=0; i<pageSequence.size();) {
             final String item = pageSequence.get(i);
