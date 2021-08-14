@@ -46,4 +46,11 @@ public class MemoryRecordController {
         return this.memoryRecordService.saveOrUpdateMemoryRecordOpt(memoryRecordInfo, null)
                 .then(Mono.just(Result.success()));
     }
+
+    @PutMapping("/addPage")
+    @ResponseBody
+    public Mono<MemoryRecordInfo> addPage(@RequestParam("recordId") String recordId,
+                                          @RequestParam(value = "pageId", required = false) String pageId) {
+        return this.memoryRecordService.addPage(recordId, pageId, null);
+    }
 }

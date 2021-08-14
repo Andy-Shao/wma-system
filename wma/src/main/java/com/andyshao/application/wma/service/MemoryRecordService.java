@@ -2,6 +2,7 @@ package com.andyshao.application.wma.service;
 
 import com.andyshao.application.wma.domain.MemoryRecordInfo;
 import com.andyshao.application.wma.neo4j.dao.MemoryRecordDao;
+import com.andyshao.application.wma.neo4j.dao.PageDao;
 import com.andyshao.application.wma.neo4j.domain.MemoryRecord;
 import com.github.andyshao.lang.AutoIncreaseArray;
 import com.github.andyshao.lang.StringOperation;
@@ -16,8 +17,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Title: <br>
@@ -31,6 +34,8 @@ import java.util.concurrent.CompletionStage;
 public class MemoryRecordService {
     @Autowired
     private MemoryRecordDao memoryRecordDao;
+    @Autowired
+    private PageDao pageDao;
 
     @Neo4jTransaction
     public Flux<MemoryRecordInfo> findMemoryRecords(CompletionStage<AsyncTransaction> tx) {
@@ -70,5 +75,31 @@ public class MemoryRecordService {
     @Neo4jTransaction
     public Mono<Void> removeRecord(String uuid, CompletionStage<AsyncTransaction> tx) {
         return this.memoryRecordDao.removeMemoryRecord(uuid, tx);
+    }
+
+    @Neo4jTransaction
+    public Mono<MemoryRecordInfo> addPage(final String recordId, String pageId, CompletionStage<AsyncTransaction> tx) {
+        final AtomicReference<String> pageUuid = new AtomicReference<>();
+        if(StringOperation.isTrimEmptyOrNull(pageId)) pageUuid.set(UUID.randomUUID().toString());
+        else pageUuid.set(pageId);
+        if(StringOperation.isTrimEmptyOrNull(pageId)) pageId = UUID.randomUUID().toString();
+
+        return this.memoryRecordDao.findRecordById(recordId, tx)
+                .flatMap(memoryRecord -> {
+                    return this.pageDao.findOrCreateById(pageUuid.get(), tx)
+                            .flatMap(page -> {
+                                AutoIncreaseArray<String> pageSequence = memoryRecord.getPageSequence();
+                                if(Objects.isNull(pageSequence)) {
+                                    pageSequence = new AutoIncreaseArray<>();
+                                    memoryRecord.setPageSequence(pageSequence);
+                                }
+                                if(!pageSequence.contains(page.getUuid())) {
+                                    pageSequence.add(page.getUuid());
+                                    return this.memoryRecordDao.saveOrUpdateOpt(memoryRecord, tx);
+                                }
+                                else return Mono.just(memoryRecord);
+                            });
+                })
+                .map(memoryRecord -> EntityOperation.copyProperties(memoryRecord, new MemoryRecordInfo()));
     }
 }

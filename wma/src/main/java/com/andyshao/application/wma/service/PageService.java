@@ -1,5 +1,6 @@
 package com.andyshao.application.wma.service;
 
+import com.andyshao.application.wma.controller.vo.PageSearchParams;
 import com.andyshao.application.wma.domain.GroupInfo;
 import com.andyshao.application.wma.domain.MaterialInfo;
 import com.andyshao.application.wma.domain.PageInfo;
@@ -86,7 +87,7 @@ public class PageService {
         if(StringOperation.isTrimEmptyOrNull(p.getUuid())) p.setUuid(UUID.randomUUID().toString());
         final Page page = new Page();
         EntityOperation.copyProperties(p, page);
-        return this.pageDao.saveOrUpdate(page, tx)
+        return this.pageDao.findOrCreateById(page.getUuid(), tx)
                 .thenMany(Flux.fromIterable(CollectionOperation.isEmptyOrNull(p.getGroups()) ? Collections.emptyList(): p.getGroups()))
                 .flatMap(g -> {
                     if(StringOperation.isTrimEmptyOrNull(g.getUuid())) g.setUuid(UUID.randomUUID().toString());
@@ -107,5 +108,17 @@ public class PageService {
                     return this.pageDao.addGroup(page, group, tx);
                 })
                 .then();
+    }
+
+    @Neo4jTransaction
+    public Flux<PageInfo> getPageByIds(PageSearchParams params, final CompletionStage<AsyncTransaction> tx) {
+        if(CollectionOperation.isEmptyOrNull(params.getPageIds()))  return Flux.empty();
+        return this.pageDao.findPageByIds(params.getPageIds(), tx)
+                .map(it -> EntityOperation.copyProperties(it, new PageInfo()));
+    }
+
+    @Neo4jTransaction
+    public Mono<Void> removePage(String uuid, CompletionStage<AsyncTransaction> tx) {
+        return this.pageDao.removePageById(uuid, tx);
     }
 }

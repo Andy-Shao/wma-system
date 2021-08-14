@@ -9,6 +9,7 @@ import org.neo4j.driver.async.AsyncTransaction;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -24,11 +25,14 @@ public interface PageDao {
     @Neo4jSql(sql = "MATCH (n:Page) RETURN n")
     Flux<Page> pages(CompletionStage<AsyncTransaction> tx);
 
+    @Neo4jSql(sql = "MATCH (n:Page) WHERE n.uuid IN $ls RETURN n")
+    Flux<Page> findPageByIds(@Param("ls")List<String> ids, CompletionStage<AsyncTransaction> tx);
+
     @Neo4jSql(sql = "MATCH (n:Page {uuid: $id}) RETURN n")
     Mono<Page> findByPk(@Param("id")String uuid, CompletionStage<AsyncTransaction> tx);
 
-    @Neo4jSql(sql = "MERGE (n:Page {uuid: $p_uuid}) RETURN n")
-    Mono<Page> saveOrUpdate(@Param("p")Page page, CompletionStage<AsyncTransaction> tx);
+    @Neo4jSql(sql = "MERGE (n:Page {uuid: $id}) RETURN n")
+    Mono<Page> findOrCreateById(@Param("id")String uuid, CompletionStage<AsyncTransaction> tx);
 
     @Neo4jSql(sql = "MATCH (n:Page {uuid: $p_uuid}), (g:Group {uuid: $g_uuid}) MERGE (n) -[:Own]-> (g) RETURN n")
     Mono<Page> addGroup(@Param("p") Page page, @Param("g")Group group, CompletionStage<AsyncTransaction> tx);
@@ -38,4 +42,7 @@ public interface PageDao {
 
     @Neo4jSql(sql = "MATCH (n:Page {uuid: $p_uuid}) -[r:Own]-> (g:Group {uuid: $g_uuid}) DELETE r")
     Mono<Void> removeGroup(@Param("p") Page page, @Param("g")Group group, CompletionStage<AsyncTransaction> tx);
+
+    @Neo4jSql(sql = "MATCH (n:Page {uuid: $id}) DELETE n")
+    Mono<Void> removePageById(@Param("id") String uuid, CompletionStage<AsyncTransaction> tx);
 }
