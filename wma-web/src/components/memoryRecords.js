@@ -32,7 +32,7 @@ class MemoryRecords extends React.Component {
     if(window.confirm('Do you want to delete it?')) {
       axios.delete('http://localhost:8080/memoryRecord/remove/' + uuid)
         .then(response => {
-          alert('Delete Success!');
+          alert(response.data);
           //window.location.reload(false);
           this.getData();
         })
@@ -65,7 +65,7 @@ class MemoryRecords extends React.Component {
           <td>{record.description}</td>
           <td>
             <button onClick={this.onClickDelete} value={record.uuid}>DELETE</button> |
-            <Link to={`/pageDetail?recordId=${record.uuid}`}>Details</Link>
+            <Link to={`/memoryRecordDetail?recordId=${record.uuid}`}>Details</Link>
           </td>
         </tr>
       ))}
