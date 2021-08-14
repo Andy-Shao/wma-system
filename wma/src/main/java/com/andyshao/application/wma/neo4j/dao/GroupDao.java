@@ -21,8 +21,8 @@ import java.util.concurrent.CompletionStage;
  */
 @Neo4jDao(eneity = Group.class, pk = String.class)
 public interface GroupDao {
-    @Neo4jSql(sql = "MERGE (n:Group {uuid: $g_uuid}) RETURN n")
-    Mono<Group> saveOrUpdate(@Param("g")Group group, CompletionStage<AsyncTransaction> tx);
+    @Neo4jSql(sql = "MERGE (n:Group {uuid: $id}) RETURN n")
+    Mono<Group> findOrCreateById(@Param("id")String uuid, CompletionStage<AsyncTransaction> tx);
 
     @Neo4jSql(sql = "MATCH (n:Group {uuid: $g_uuid}), (m:Material {uuid: $m_uuid}) MERGE (n) -[:Include]-> (m) RETURN n")
     Mono<Group> addMaterial(@Param("g")Group group, @Param("m")Material material, CompletionStage<AsyncTransaction> tx);

@@ -6,6 +6,7 @@ import com.andyshao.application.wma.service.PageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Title: <br>
@@ -21,15 +22,21 @@ public class PageController {
     @Autowired
     private PageService pageService;
 
-    @GetMapping("/getPages")
-    @ResponseBody
-    public Flux<PageInfo> getPages() {
-        return this.pageService.getPages(null);
-    }
-
     @PostMapping("/getPageByIds")
     @ResponseBody
     public Flux<PageInfo> getPageByIds(@RequestBody PageSearchParams params) {
         return this.pageService.getPageByIds(params, null);
+    }
+
+    @GetMapping("/getPage/{id}")
+    public Mono<PageInfo> getPageById(@PathVariable("id")String pageId) {
+        return this.pageService.getPageInfo(pageId, null);
+    }
+
+    @PutMapping("/addGroup")
+    @ResponseBody
+    public Mono<PageInfo> addGroup(@RequestParam("pageId")String pageId,
+                                   @RequestParam(value = "groupId", required = false) String groupId) {
+        return this.pageService.addGroup(pageId, groupId, null);
     }
 }

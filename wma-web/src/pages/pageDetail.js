@@ -3,16 +3,41 @@ import { Link } from "react-router-dom";
 import axios from "axios"
 
 
-import PageList from "../components/pageList.js"
 import AppTitle from "../components/appTitle.js"
+
+class GroupList extends React.Component {
+  render() {
+    return (
+      <div>
+      <table>
+        <thead>
+        <tr>
+          <td>UUID</td>
+          <td>Operation</td>
+        </tr>
+        </thead>
+        <tbody>
+        { this.props.page.groups.map((group) => (
+        <tr>
+          <td>{group.uuid}</td>
+          <td>
+            <button>DELETE</button> |
+          </td>
+        </tr>
+        ))}
+        </tbody>
+      </table>
+      </div>
+    );
+  }
+}
 
 class PageDetail extends React.Component {
   state = { 
-    pages: [{ 
-      //uuid: '12345'
-    }],
-    recordId: '',
-    record: { }
+    pageId: '',
+    page: { 
+      groups: [ ]
+    }
   }
 
   componentWillMount() { 
@@ -20,26 +45,15 @@ class PageDetail extends React.Component {
   }
 
   getData() {
-    axios.get('http://localhost:8080/page/getPages')
-      .then(response => { 
-        console.log(response);
-        this.setState((prveState,props) => ({ 
-          pages: response.data
-        }));
-      })
-      .catch(error => { 
-        console.log(error);
-      });
-
     const queryParams = new URLSearchParams(window.location.search)
-    const id = queryParams.get('recordId');
-    this.setState({ recordId: id });
+    const id = queryParams.get('pageId');
+    this.setState({ pageId: id });
 
-    axios.get('http://localhost:8080/memoryRecord/record/'+id)
+    axios.get('http://localhost:8080/page/getPage/'+id)
       .then(response => { 
         console.log(response);
         this.setState((prveState, pros) => ({ 
-          record: response.data
+          page: response.data
         }));
       })
       .catch(error => { 
@@ -51,10 +65,10 @@ class PageDetail extends React.Component {
     alert('Yes!');
   }
 
-  onAddPage = (event) => {
-    axios.put('http://localhost:8080/page/addPage')
+  onAddGroup = (event) => {
+    axios.put('http://localhost:8080/page/addGroup?pageId=' + this.state.page.uuid)
       .then(response => {
-        alert('Add Page Success!');
+        alert('Add Group Success!');
         this.getData();
       })
       .catch(error => {
@@ -66,9 +80,9 @@ class PageDetail extends React.Component {
     return (
       <div>
         <AppTitle />
-        <h3>Memory Record Id: {this.state.record.uuid} | Description: {this.state.record.description}</h3>
-        <button onClick={this.onAddPage}>Add Page</button>
-        <PageList pages={this.state.pages}/>
+        <h3>Page Id: {this.state.page.uuid}</h3>
+        <button onClick={this.onAddGroup}>Add Group</button>
+        <GroupList page={this.state.page}/>
         <Link to="/">Main Page</Link>
       </div>
     );

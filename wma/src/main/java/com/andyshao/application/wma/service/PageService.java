@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +57,7 @@ public class PageService {
         if(StringOperation.isTrimEmptyOrNull(pageId)) throw new IllegalArgumentException("pageId cannot be null or empty");
         return this.pageDao.findByPk(pageId, tx)
                 .flatMap(page -> {
-                    return this.pageDao.findGroups(page, tx)
+                    return this.pageDao.findGroups(pageId, tx)
                             .flatMap(group -> {
                                 return this.groupDao.findMaterials(group, tx)
                                         .map(material -> {
@@ -93,7 +94,7 @@ public class PageService {
                     if(StringOperation.isTrimEmptyOrNull(g.getUuid())) g.setUuid(UUID.randomUUID().toString());
                     final Group group = new Group();
                     EntityOperation.copyProperties(g, group);
-                    return this.groupDao.saveOrUpdate(group, tx)
+                    return this.groupDao.findOrCreateById(group.getUuid(), tx)
                             .thenMany(Flux.fromIterable(g.getMaterials()))
                             .flatMap(m -> {
                                 if(StringOperation.isTrimEmptyOrNull(m.getUuid())) m.setUuid(UUID.randomUUID().toString());
@@ -105,7 +106,7 @@ public class PageService {
                             .then(Mono.just(group));
                 })
                 .flatMap(group -> {
-                    return this.pageDao.addGroup(page, group, tx);
+                    return this.pageDao.addGroup(page.getUuid(), group.getUuid(), tx);
                 })
                 .then();
     }
@@ -120,5 +121,25 @@ public class PageService {
     @Neo4jTransaction
     public Mono<Void> removePage(String uuid, CompletionStage<AsyncTransaction> tx) {
         return this.pageDao.removePageById(uuid, tx);
+    }
+
+    @Neo4jTransaction
+    public Mono<PageInfo> addGroup(final String pageId, String groupId, final CompletionStage<AsyncTransaction> tx) {
+        final AtomicReference<String> groupKey = new AtomicReference<>();
+        if(StringOperation.isTrimEmptyOrNull(groupId)) groupKey.set(UUID.randomUUID().toString());
+        else groupKey.set(groupId);
+        return this.pageDao.findByPk(pageId, tx)
+                .flatMap(page -> {
+                    final PageInfo pageInfo = EntityOperation.copyProperties(page, new PageInfo());
+                    return this.groupDao.findOrCreateById(groupKey.get(), tx)
+                            .then(this.pageDao.addGroup(pageId, groupKey.get(), tx))
+                            .thenMany(this.pageDao.findGroups(pageId, tx))
+                            .map(group -> EntityOperation.copyProperties(group, new GroupInfo()))
+                            .collectList()
+                            .map(groups -> {
+                                pageInfo.setGroups(groups);
+                                return pageInfo;
+                            });
+                });
     }
 }
