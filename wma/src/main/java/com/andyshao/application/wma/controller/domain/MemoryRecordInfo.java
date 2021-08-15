@@ -1,4 +1,4 @@
-package com.andyshao.application.wma.domain;
+package com.andyshao.application.wma.controller.domain;
 
 import com.github.andyshao.lang.AutoIncreaseArray;
 import lombok.Getter;

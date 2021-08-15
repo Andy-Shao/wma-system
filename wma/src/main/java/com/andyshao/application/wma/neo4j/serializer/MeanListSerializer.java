@@ -1,6 +1,6 @@
 package com.andyshao.application.wma.neo4j.serializer;
 
-import com.andyshao.application.wma.neo4j.domain.Means;
+import com.andyshao.application.wma.neo4j.domain.Mean;
 import com.github.andyshao.lang.NotSupportConvertException;
 import com.github.andyshao.neo4j.process.serializer.Serializer;
 import org.neo4j.driver.Value;
@@ -18,18 +18,18 @@ import java.util.stream.Collectors;
  *
  * @author Andy.Shao
  */
-public class MeanListSerializer implements Serializer<List<Means>> {
+public class MeanListSerializer implements Serializer<List<Mean>> {
     public static final String ITEM_SPLIT = ";";
     public static final String ATTRIBUTE_SPLIT = ",";
 
     @Override
-    public Value encode(List<Means> data) throws NotSupportConvertException {
+    public Value encode(List<Mean> data) throws NotSupportConvertException {
         if(Objects.isNull(data)) return Values.NULL;
-        final String value = data.stream()
-                .map(means -> {
-                    return means.getInterpretation() + ATTRIBUTE_SPLIT + means.getType().name() + ITEM_SPLIT;
+        final List<String> value = data.stream()
+                .map(mean -> {
+                    return mean.getInterpretation() + ATTRIBUTE_SPLIT + mean.getType().name() + ITEM_SPLIT;
                 })
-                .collect(Collectors.joining());
+                .collect(Collectors.toList());
         return Values.value(value);
     }
 }

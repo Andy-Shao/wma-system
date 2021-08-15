@@ -1,7 +1,7 @@
 package com.andyshao.application.wma.controller;
 
 import com.andyshao.application.wma.controller.vo.PageSearchParams;
-import com.andyshao.application.wma.domain.PageInfo;
+import com.andyshao.application.wma.controller.domain.PageInfo;
 import com.andyshao.application.wma.service.PageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

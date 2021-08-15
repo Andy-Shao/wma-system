@@ -116,7 +116,7 @@ class MaterialManagement extends React.Component {
         <AppTitle />
         <h3>Material Management Page</h3>
         <GroupSearchForm onRecordIdChange={this.onRecordIdChange} onPageIdChange={this.onPageIdChange} onSubmit={this.onSearch} records={this.state.records} pageIds={this.state.pageIds}/>
-        <Link to="/">Main Page</Link>
+        <Link to="/">Main Page</Link> | <Link to="/createMaterial">Create Material</Link>
       </div>
     );
   }

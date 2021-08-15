@@ -1,6 +1,6 @@
 package com.andyshao.application.wma.controller;
 
-import com.andyshao.application.wma.domain.MemoryRecordInfo;
+import com.andyshao.application.wma.controller.domain.MemoryRecordInfo;
 import com.andyshao.application.wma.service.MemoryRecordService;
 import com.github.andyshao.exception.Result;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,13 +1,13 @@
 package com.andyshao.application.wma.neo4j.serializer;
 
-import com.andyshao.application.wma.neo4j.domain.Means;
+import com.andyshao.application.wma.neo4j.domain.Mean;
 import com.andyshao.application.wma.neo4j.domain.WordType;
 import com.github.andyshao.lang.NotSupportConvertException;
+import com.github.andyshao.lang.StringOperation;
 import com.github.andyshao.neo4j.process.serializer.Deserializer;
 import org.neo4j.driver.Value;
 import org.neo4j.driver.Values;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -20,18 +20,20 @@ import java.util.stream.Collectors;
  *
  * @author Andy.Shao
  */
-public class MeanListDeSerializer implements Deserializer<List<Means>> {
+public class MeanListDeSerializer implements Deserializer<List<Mean>> {
     @Override
-    public List<Means> decode(Value value) throws NotSupportConvertException {
+    public List<Mean> decode(Value value) throws NotSupportConvertException {
         if(Objects.equals(Values.NULL, value)) return null;
-        final String str = value.asString();
-        return Arrays.stream(str.split(MeanListSerializer.ITEM_SPLIT))
-                .map(mean -> {
-                    final String[] splits = mean.split(MeanListSerializer.ATTRIBUTE_SPLIT);
-                    final Means means = new Means();
-                    means.setInterpretation(splits[0]);
-                    means.setType(WordType.valueOf(splits[1]));
-                    return means;
+        final List<Object> values = value.asList();
+        return values.stream()
+                .map(it -> {
+                    String meanStr = it.toString();
+                    meanStr = StringOperation.replaceLast(meanStr, MeanListSerializer.ITEM_SPLIT, "");
+                    final String[] splits = meanStr.split(MeanListSerializer.ATTRIBUTE_SPLIT);
+                    final Mean mean = new Mean();
+                    mean.setInterpretation(splits[0]);
+                    mean.setType(WordType.valueOf(splits[1]));
+                    return mean;
                 })
                 .collect(Collectors.toList());
     }

@@ -1,6 +1,5 @@
-package com.andyshao.application.wma.domain;
+package com.andyshao.application.wma.controller.domain;
 
-import com.andyshao.application.wma.neo4j.domain.Means;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +15,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class MaterialInfo {
+public class GroupInfo {
     private String uuid;
-    private List<String> wordList;
-    private List<Means> meansList;
+    private List<MaterialInfo> materials;
 }

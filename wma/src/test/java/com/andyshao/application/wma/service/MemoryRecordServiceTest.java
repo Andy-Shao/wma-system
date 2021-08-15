@@ -1,7 +1,7 @@
 package com.andyshao.application.wma.service;
 
 import com.andyshao.application.wma.IntegrationTest;
-import com.andyshao.application.wma.domain.MemoryRecordInfo;
+import com.andyshao.application.wma.controller.domain.MemoryRecordInfo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

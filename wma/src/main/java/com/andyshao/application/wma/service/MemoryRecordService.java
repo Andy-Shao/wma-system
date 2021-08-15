@@ -1,6 +1,6 @@
 package com.andyshao.application.wma.service;
 
-import com.andyshao.application.wma.domain.MemoryRecordInfo;
+import com.andyshao.application.wma.controller.domain.MemoryRecordInfo;
 import com.andyshao.application.wma.neo4j.dao.MemoryRecordDao;
 import com.andyshao.application.wma.neo4j.dao.PageDao;
 import com.andyshao.application.wma.neo4j.domain.MemoryRecord;

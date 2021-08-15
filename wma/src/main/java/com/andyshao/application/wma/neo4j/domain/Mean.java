@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Means {
+public class Mean {
     private String interpretation;
     private WordType type;
 }

@@ -1,4 +1,4 @@
-package com.andyshao.application.wma.domain;
+package com.andyshao.application.wma.controller.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class GroupInfo {
+public class PageInfo {
     private String uuid;
-    private List<MaterialInfo> materials;
+    private List<GroupInfo> groups;
 }

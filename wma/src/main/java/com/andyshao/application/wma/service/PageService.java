@@ -1,9 +1,9 @@
 package com.andyshao.application.wma.service;
 
 import com.andyshao.application.wma.controller.vo.PageSearchParams;
-import com.andyshao.application.wma.domain.GroupInfo;
-import com.andyshao.application.wma.domain.MaterialInfo;
-import com.andyshao.application.wma.domain.PageInfo;
+import com.andyshao.application.wma.controller.domain.GroupInfo;
+import com.andyshao.application.wma.controller.domain.MaterialInfo;
+import com.andyshao.application.wma.controller.domain.PageInfo;
 import com.andyshao.application.wma.neo4j.dao.GroupDao;
 import com.andyshao.application.wma.neo4j.dao.MaterialDao;
 import com.andyshao.application.wma.neo4j.dao.MemoryRecordDao;
