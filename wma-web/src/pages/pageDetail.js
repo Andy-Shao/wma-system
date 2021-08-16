@@ -46,7 +46,7 @@ class PageDetail extends React.Component {
   }
 
   getData() {
-    const queryParams = new URLSearchParams(window.location.search)
+    const queryParams = new URLSearchParams(window.location.search);
     const id = queryParams.get('pageId');
     const recId = queryParams.get('recordId');
     this.setState({ 

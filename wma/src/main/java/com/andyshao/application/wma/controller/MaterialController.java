@@ -23,7 +23,7 @@ public class MaterialController {
     @Autowired
     private MaterialService materialService;
 
-    @PutMapping("/add")
+    @PostMapping("/addOrUpdate")
     @ResponseBody
     public Mono<MaterialInfo> saveOrUpdate(@Valid @RequestBody MaterialInfo materialInfo) {
         return this.materialService.saveOrUpdate(materialInfo, null);
@@ -33,5 +33,10 @@ public class MaterialController {
     @ResponseBody
     public Flux<MaterialInfo> findMaterialByWord(@PathVariable("w") String word) {
         return this.materialService.matchMaterialByWord(word, null);
+    }
+
+    @GetMapping("/getById/{id}")
+    public Mono<MaterialInfo> findById(@PathVariable("id")String uuid) {
+        return this.materialService.findById(uuid, null);
     }
 }

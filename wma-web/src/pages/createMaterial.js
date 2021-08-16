@@ -91,7 +91,7 @@ class MaterialSearch extends React.Component {
         </div>
         ))}
       </td>
-      <td><Link to="/">Amend</Link> | <button>Del</button></td>
+      <td><Link to={'/falsifyMaterial?materialId=' + material.uuid}>Amend</Link> | <button>Del</button></td>
     </tr>
     ))}
     </tbody>
@@ -180,7 +180,7 @@ class CreateMaterial extends React.Component {
 
   onSubmit = (event) => {
     const material = this.state.newMaterial;
-    axios.put('http://localhost:8080/material/add',
+    axios.post('http://localhost:8080/material/addOrUpdate',
       material,
       {
         headers: {

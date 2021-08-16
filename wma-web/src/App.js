@@ -3,13 +3,15 @@ import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Switch, Link, Redirect } from "react-router-dom";
 
-import MainPage from "./pages/mainPage.js"
-import PageDetail from "./pages/pageDetail.js"
-import NotFoundPage from "./pages/notFoundPage.js"
-import CreateMemoryRecord from "./pages/createMemoryRecord.js"
-import MemoryRecordDetail from "./pages/memoryRecordDetail.js"
-import MaterialManagement from "./pages/materialManagement.js"
-import CreateMaterial from "./pages/createMaterial.js"
+import MainPage from "./pages/mainPage.js";
+import PageDetail from "./pages/pageDetail.js";
+import NotFoundPage from "./pages/notFoundPage.js";
+import CreateMemoryRecord from "./pages/createMemoryRecord.js";
+import MemoryRecordDetail from "./pages/memoryRecordDetail.js";
+import MaterialManagement from "./pages/materialManagement.js";
+import CreateMaterial from "./pages/createMaterial.js";
+import FalsifyMaterial from "./pages/falsifyMaterial.js";
+import ModifyGroup from "./pages/modifyGroup.js"
 
 class App extends React.Component {
 
@@ -23,6 +25,8 @@ class App extends React.Component {
           <Route exact path="/createMemoryRecord" component={CreateMemoryRecord} />
           <Route exact path="/createMaterial" component={CreateMaterial} />
           <Route exact path="/materialManagement" component={MaterialManagement} />
+          <Route exact path="/falsifyMaterial" component={FalsifyMaterial} />
+          <Route exact path="/modifyGroup" component={ModifyGroup} />
           <Route exact path="/404" component={NotFoundPage}/>
           <Redirect to="/404"/>
         </Switch>

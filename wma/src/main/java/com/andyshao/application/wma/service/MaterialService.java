@@ -40,4 +40,10 @@ public class MaterialService {
         return this.materialDao.matchByWord(word, tx)
                 .map(it -> EntityOperation.copyProperties(it, new MaterialInfo()));
     }
+
+    @Neo4jTransaction
+    public Mono<MaterialInfo> findById(String uuid, CompletionStage<AsyncTransaction> tx) {
+        return this.materialDao.findByPk(uuid, tx)
+                .map(it -> EntityOperation.copyProperties(it, new MaterialInfo()));
+    }
 }

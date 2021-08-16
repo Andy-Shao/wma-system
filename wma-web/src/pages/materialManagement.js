@@ -9,7 +9,6 @@ class GroupSearchForm extends React.Component {
   render() {
     return (
       <div>
-      <form onSubmit={this.props.onSubmit}>
       <table>
         <tbody>
         <tr>
@@ -36,17 +35,28 @@ class GroupSearchForm extends React.Component {
         </tr>
         <tr>
           <td></td>
-          <td><input type="submit" value="Search" /></td>
+          <td><input type="submit" value="Search" onClick={this.props.onSubmit}/></td>
         </tr>
         </tbody>
       </table>
-      </form>
       </div>
     );
   }
 }
 
 class MaterialList extends React.Component {
+  render() {
+    return (
+    <div>
+    <h3>Page Details</h3>
+    { this.props.page.groups.map( (group, index) => (
+    <div>
+    <label>Group uuid: {group.uuid}</label> | <Link to={'/modifyGroup?groupId=' + group.uuid}>Amend</Link>
+    </div>
+    ))}
+    </div>
+    );
+  }
 }
 
 class MaterialManagement extends React.Component {
@@ -95,6 +105,7 @@ class MaterialManagement extends React.Component {
     });
     this.setState({ 
       currentRecordId: recordId,
+      currentPageId: 'NULL',
       pageIds: pIds
     });
   }
@@ -107,7 +118,22 @@ class MaterialManagement extends React.Component {
   }
 
   onSearch = (event) => { 
-    alert('record id: ' + this.state.currentRecordId + '; page id: ' + this.state.currentPageId);
+    const currentRecordId = this.state.currentRecordId;
+    const currentPageId = this.state.currentPageId;
+
+    if(currentPageId === 'NULL') {
+      alert('record id: ' + this.state.currentRecordId + '; page id: ' + this.state.currentPageId);
+    }
+    else {
+      axios.get('http://localhost:8080/page/getPage/' + currentPageId)
+        .then(response => { 
+          console.log(response);
+          this.setState({ page: response.data });
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
   }
 
   render() {
@@ -116,6 +142,7 @@ class MaterialManagement extends React.Component {
         <AppTitle />
         <h3>Material Management Page</h3>
         <GroupSearchForm onRecordIdChange={this.onRecordIdChange} onPageIdChange={this.onPageIdChange} onSubmit={this.onSearch} records={this.state.records} pageIds={this.state.pageIds}/>
+        <MaterialList page={this.state.page}/>
         <Link to="/">Main Page</Link> | <Link to="/createMaterial">Create Material</Link>
       </div>
     );
