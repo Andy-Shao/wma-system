@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 
-import AppTitle from "../components/appTitle.js"
+import AppTitle from "../components/appTitle.js";
+import "../css/table.css";
 
 class CreateMaterialForm extends React.Component {
 
@@ -55,6 +56,51 @@ class CreateMaterialForm extends React.Component {
   }
 }
 
+class MaterialSearch extends React.Component {
+  render() {
+    return (
+    <div>
+    <table>
+    <tbody>
+    <tr>
+      <td>Word Match: <input type="text" name="word" onChange={this.props.onMatchParamChange} /></td>
+      <td><button onClick={this.props.onMatchMaterial}>Search</button></td>
+    </tr>
+    </tbody>
+    </table>
+    <table class="bolderTable">
+    <thead>
+    <tr>
+      <td>UUID</td>
+      <td>WordList</td>
+      <td>Means</td>
+      <td>Operation</td>
+    </tr>
+    </thead>
+    <tbody>
+    { this.props.materials.map((material) => (
+    <tr>
+      <td>{material.uuid}</td>
+      <td>{material.wordList.map((word) => (
+        <span>{word}; </span>
+        ))}
+      </td>
+      <td>{material.meansList.map((mean) => (
+        <div>
+          <span>{mean.interpretation},{mean.type}; </span>
+        </div>
+        ))}
+      </td>
+      <td><Link to="/">Amend</Link> | <button>Del</button></td>
+    </tr>
+    ))}
+    </tbody>
+    </table>
+    </div>
+    );
+  }
+}
+
 class CreateMaterial extends React.Component {
   state = { 
     newMaterial: {
@@ -63,6 +109,17 @@ class CreateMaterial extends React.Component {
         interpretation: '',
         type: 'v'
       }]
+    },
+    materials: [{ 
+      uuid: 'N/A',
+      wordList: ['N/A'],
+      meansList: [{ 
+        interpretation: 'N/A',
+        type: 'N/A'
+      }]
+    }],
+    matchParam: { 
+      word: ''
     }
   }
 
@@ -133,11 +190,46 @@ class CreateMaterial extends React.Component {
       })
       .then(response => { 
         console.log(response);
+        const material = { 
+          wordList: [ '' ],
+          meansList: [{
+          interpretation: '',
+          type: 'v'
+          }]
+        };
+        this.setState({ newMaterial: material });
       })
       .catch(error => { 
         console.log(error);
       });
     alert('Adding Success!');
+  }
+
+  onMatchParamChange = (event) => { 
+    const value = event.target.value;
+    const name = event.target.name;
+    const matchPm = this.state.matchParam;
+    var hasChanged = false;
+
+    if(name === 'word') {
+      matchPm.word = value;  
+      hasChanged = true;
+    }
+
+    if(hasChanged) {
+      this.setState({ matchParam: matchPm });
+    }
+  }
+
+  onMatchMaterial = (event) => {
+    axios.get('http://localhost:8080/material/getByWord/' + this.state.matchParam.word)
+      .then(response => { 
+        console.log(response);
+        this.setState({ materials: response.data });
+      })
+      .catch(error => { 
+        console.log(error);
+      });
   }
 
   render() {
@@ -146,7 +238,9 @@ class CreateMaterial extends React.Component {
         <AppTitle />
         <h3>Creating Material Page</h3>
         <CreateMaterialForm material={this.state.newMaterial} onClickAddWord={this.onClickAddWord} onClickAddMean={this.onClickAddMean} onClickDelWord={this.onClickDelWord} onClickDelMean={this.onClickDelMean} onWordChange={this.onWordChange} onInterpretationChange={this.onInterpretationChange} onTypeChange={this.onTypeChange} onSubmit={this.onSubmit} />
-        <Link to="/">Main Page</Link>
+        <hr/>
+        <MaterialSearch materials={this.state.materials} onMatchParamChange={this.onMatchParamChange} onMatchMaterial={this.onMatchMaterial}/>
+        <Link to="/">Main Page</Link> | <Link to="/materialManagement">Material Management</Link>
       </div>
     );
   }
