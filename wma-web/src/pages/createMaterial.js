@@ -202,7 +202,7 @@ class CreateMaterial extends React.Component {
       .catch(error => { 
         console.log(error);
       });
-    alert('Adding Success!');
+    //alert('Adding Success!');
   }
 
   onMatchParamChange = (event) => { 

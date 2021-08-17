@@ -77,7 +77,10 @@ class MaterialList extends React.Component {
         </div>
       ))}
       </td>
-      <td> <button name={group.uuid} value={material.uuid} onClick={this.props.onEliminateMaterial}>eliminate</button> </td>
+      <td> 
+      <button name={group.uuid} value={material.uuid} onClick={this.props.onEliminateMaterial}>eliminate</button> 
+      | <Link to={ '/falsifyMaterial?materialId=' + material.uuid }>Modify</Link>
+      </td>
     </tr>
     ))}
     </tbody>

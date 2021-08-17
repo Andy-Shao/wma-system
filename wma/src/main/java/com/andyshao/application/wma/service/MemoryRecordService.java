@@ -141,7 +141,7 @@ public class MemoryRecordService {
     }
 
     @Neo4jTransaction
-    public Mono<PageInfo> studyPage(String recordId, CompletionStage<AsyncTransaction> tx) {
+    public Mono<PageInfo> studyPage(String recordId, final CompletionStage<AsyncTransaction> tx) {
         return this.memoryRecordDao.findRecordById(recordId, tx)
                 .flatMap(record -> {
                     final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
@@ -151,6 +151,52 @@ public class MemoryRecordService {
                     final String pageUuid = pageSequence.get(0);
 
                     return this.pageService.getPageInfo(pageUuid, tx);
+                });
+    }
+
+    @Neo4jTransaction
+    public Mono<PageInfo> finishStudyPage(String recordId, final CompletionStage<AsyncTransaction> tx) {
+        return this.memoryRecordDao.findRecordById(recordId, tx)
+                .flatMap(record -> {
+                    int studyNumber = record.getStudyNumber();
+                    int newStudyNumber = Math.max(0, studyNumber - 1);
+                    record.setStudyNumber(newStudyNumber);
+                    if(newStudyNumber == 0) return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
+
+                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+                    if(CollectionOperation.isEmptyOrNull(pageSequence)) {
+                        record.setPageSequence(new AutoIncreaseArray<>());
+                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
+                    }
+                    if(pageSequence.size() > 1) {
+                        pageSequence.move(0, pageSequence.size() - 1);
+                    }
+                    final String newPageId = pageSequence.get(0);
+                    return this.memoryRecordDao.saveOrUpdateOpt(record, tx)
+                            .then(this.pageService.getPageInfo(newPageId, tx));
+                });
+    }
+
+    @Neo4jTransaction
+    public Mono<PageInfo> restudyPage(String recordId, CompletionStage<AsyncTransaction> tx) {
+        return this.memoryRecordDao.findRecordById(recordId, tx)
+                .flatMap(record -> {
+                    final int studyNumber = record.getStudyNumber();
+                    int newStudyNumber = Math.max(0, studyNumber - 1);
+                    record.setStudyNumber(newStudyNumber);
+                    if(newStudyNumber == 0) return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
+
+                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+                    if(CollectionOperation.isEmptyOrNull(pageSequence)){
+                        record.setPageSequence(new AutoIncreaseArray<>());
+                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
+                    }
+                    if(pageSequence.size() > 1) {
+                        pageSequence.move(0, newStudyNumber);
+                    }
+                    final String newPageId = pageSequence.get(0);
+                    return this.memoryRecordDao.saveOrUpdateOpt(record, tx)
+                            .then(this.pageService.getPageInfo(newPageId, tx));
                 });
     }
 }

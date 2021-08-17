@@ -40,6 +40,16 @@ public class MemoryRecordController {
         return this.memoryRecordService.studyPage(recordId, null);
     }
 
+    @PutMapping("/study/finish")
+    public Mono<PageInfo> finishStudyPage(@PathVariable("id")String recordId) {
+        return this.memoryRecordService.finishStudyPage(recordId, null);
+    }
+
+    @PutMapping("/study/rerun")
+    public Mono<PageInfo> restudyPage(@PathVariable("id")String recordId) {
+        return this.memoryRecordService.restudyPage(recordId, null);
+    }
+
     @DeleteMapping("/remove/{id}")
     @ResponseBody
     public Mono<String> removeRecord(@PathVariable("id") String uuid) {

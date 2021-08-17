@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import axios from "axios"
+import axios from "axios";
 
 
-import AppTitle from "../components/appTitle.js"
+import AppTitle from "../components/appTitle.js";
 
 class GroupList extends React.Component {
   render() {

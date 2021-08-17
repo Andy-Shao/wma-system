@@ -11,7 +11,9 @@ import MemoryRecordDetail from "./pages/memoryRecordDetail.js";
 import MaterialManagement from "./pages/materialManagement.js";
 import CreateMaterial from "./pages/createMaterial.js";
 import FalsifyMaterial from "./pages/falsifyMaterial.js";
-import ModifyGroup from "./pages/modifyGroup.js"
+import ModifyGroup from "./pages/modifyGroup.js";
+import Study from "./pages/study.js";
+import LaunchStudy from "./pages/launchStudy.js";
 
 class App extends React.Component {
 
@@ -27,6 +29,8 @@ class App extends React.Component {
           <Route exact path="/materialManagement" component={MaterialManagement} />
           <Route exact path="/falsifyMaterial" component={FalsifyMaterial} />
           <Route exact path="/modifyGroup" component={ModifyGroup} />
+          <Route exact path="/study" component={Study} />
+          <Route exact path="/launchStudy" component={LaunchStudy} />
           <Route exact path="/404" component={NotFoundPage}/>
           <Redirect to="/404"/>
         </Switch>

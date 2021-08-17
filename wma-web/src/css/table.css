@@ -1,3 +1,7 @@
 .bolderTable, .bolderTable tr td {
   border: 1px solid#ddd;
 }
+
+span.hidden { 
+  visibility: hidden;
+}
