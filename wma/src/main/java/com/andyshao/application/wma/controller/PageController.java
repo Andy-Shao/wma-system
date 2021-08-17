@@ -42,7 +42,7 @@ public class PageController {
 
     @DeleteMapping("/removeGroup")
     @ResponseBody
-    public Mono<Void> removeGroup(@RequestParam("pageId")String pageId, @RequestParam("groupId")String groupId) {
+    public Mono<String> removeGroup(@RequestParam("pageId")String pageId, @RequestParam("groupId")String groupId) {
         return this.pageService.removeGroup(pageId, groupId, null);
     }
 }

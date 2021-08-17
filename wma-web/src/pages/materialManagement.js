@@ -48,10 +48,40 @@ class MaterialList extends React.Component {
   render() {
     return (
     <div>
-    <h3>Page Details</h3>
+    <h3>Page Details</h3> <button onClick={this.props.onAddGroup}>Add Group</button>
     { this.props.page.groups.map( (group, index) => (
     <div>
-    <label>Group uuid: {group.uuid}</label> | <Link to={'/modifyGroup?groupId=' + group.uuid}>Amend</Link>
+    <label>Group uuid: {group.uuid}</label> | <Link to={'/modifyGroup?groupId=' + group.uuid}>Amend</Link> | <button value={group.uuid} onClick={this.props.onDeleteGroup}>Delete</button>
+    <table class="bolderTable">
+    <thead>
+    <tr>
+      <td>UUID</td>
+      <td>wordList</td>
+      <td>meansList</td>
+      <td>Operation</td>
+    </tr>
+    </thead>
+    <tbody>
+    { group.materials.map( (material) => (
+    <tr>
+      <td>{material.uuid}</td>
+      <td>
+      { material.wordList.map( (word) => (
+        <span>{word};</span>
+      ))}
+      </td>
+      <td>
+      { material.meansList.map( (mean) => (
+        <div>
+          <span>{mean.interpretation},{mean.type};</span>
+        </div>
+      ))}
+      </td>
+      <td> <button name={group.uuid} value={material.uuid} onClick={this.props.onEliminateMaterial}>eliminate</button> </td>
+    </tr>
+    ))}
+    </tbody>
+    </table>
     </div>
     ))}
     </div>
@@ -125,7 +155,12 @@ class MaterialManagement extends React.Component {
       alert('record id: ' + this.state.currentRecordId + '; page id: ' + this.state.currentPageId);
     }
     else {
-      axios.get('http://localhost:8080/page/getPage/' + currentPageId)
+      this.getPageInfo(currentPageId);
+    }
+  }
+  
+  getPageInfo(pageId) {
+      axios.get('http://localhost:8080/page/getPage/' + pageId)
         .then(response => { 
           console.log(response);
           this.setState({ page: response.data });
@@ -133,6 +168,63 @@ class MaterialManagement extends React.Component {
         .catch(error => { 
           console.log(error);
         });
+  }
+
+  onAddGroup = (event) => {
+    const currentRecordId = this.state.currentRecordId;
+    const currentPageId = this.state.currentPageId;
+
+    if(currentRecordId === 'NULL' || currentPageId === 'NULL') {
+      alert('recordId and pageId is NULL');
+    }
+    else {
+      axios.put('http://localhost:8080/page/addGroup?pageId=' + currentPageId)
+        .then(response => { 
+          console.log(response);
+          this.getPageInfo(currentPageId);
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
+  }
+
+  onDeleteGroup = (event) => { 
+    const pageId = this.state.currentPageId;
+    const groupId = event.target.value;
+
+    if(window.confirm('Do you want to delete this group?')) {
+      axios.delete('http://localhost:8080/page/removeGroup?pageId=' + pageId + '&groupId=' + groupId)
+        .then(response => { 
+          console.log(response);
+          alert(response.data);
+          this.getPageInfo(pageId);
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
+    else {
+      //Do Nothing
+    }
+  }
+
+  onEliminateMaterial = (event) => {
+    const groupId = event.target.name;
+    const materialId = event.target.value;
+
+    if(window.confirm('Do you want to eliminate this material?')) {
+      axios.delete('http://localhost:8080/group/removeMaterial?groupId=' + groupId + '&materialId=' + materialId)
+        .then(response => { 
+          console.log(response);
+          this.getPageInfo(this.state.currentPageId);
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
+    else {
+      //Do nothing
     }
   }
 
@@ -142,7 +234,7 @@ class MaterialManagement extends React.Component {
         <AppTitle />
         <h3>Material Management Page</h3>
         <GroupSearchForm onRecordIdChange={this.onRecordIdChange} onPageIdChange={this.onPageIdChange} onSubmit={this.onSearch} records={this.state.records} pageIds={this.state.pageIds}/>
-        <MaterialList page={this.state.page}/>
+        <MaterialList page={this.state.page} onAddGroup={this.onAddGroup} onDeleteGroup={this.onDeleteGroup} onEliminateMaterial={this.onEliminateMaterial}/>
         <Link to="/">Main Page</Link> | <Link to="/createMaterial">Create Material</Link>
       </div>
     );

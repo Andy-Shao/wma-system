@@ -9,6 +9,37 @@ class MaterialList extends React.Component {
   render() {
     return (
     <div>
+    <h3>Group id: {this.props.group.uuid}</h3>
+    <table>
+    <thead>
+    <tr>
+      <td>UUID</td>
+      <td>WordList</td>
+      <td>MeansList</td>
+      <td>Operation</td>
+    </tr>
+    </thead>
+    <tbody>
+    { this.props.group.materials.map( (material, index) => (
+    <tr>
+      <td>{material.uuid}</td>
+      <td>
+      { material.wordList.map( (word) => (
+        <span>{word};</span>
+      ))}
+      </td>
+      <td>
+      { material.meansList.map( (mean) => (
+        <div>
+          <span>{mean.interpretation},{mean.type};</span>
+        </div>
+      ))}
+      </td>
+      <td><button value={material.uuid} onClick={this.props.onOmitMaterial}>Del</button></td>
+    </tr>
+    ))}
+    </tbody>
+    </table>
     </div>
     );
   }
@@ -53,7 +84,7 @@ class MaterialSearch extends React.Component {
         </div>
       ))}
       </td>
-      <td><button>Add to Group</button></td>
+      <td><button value={material.uuid} onClick={this.props.onAddMaterial}>Add to Group</button></td>
     </tr>
     ))}
     </tbody>
@@ -68,7 +99,11 @@ class ModifyGroup extends React.Component {
     groupId: '',
     group: {
       uuid: '',
-      materials: [{ }]
+      materials: [{ 
+        uuid: 'N/A',
+        wordList: [ ],
+        meansList: [ ]
+      }]
     },
     searchMaterials: [{ 
       uuid: 'N/A',
@@ -93,6 +128,7 @@ class ModifyGroup extends React.Component {
     axios.get('http://localhost:8080/group/getById/' + id)
       .then(response => { 
         console.log(response);
+        this.setState({ group: response.data });
       })
       .catch(error => { 
         console.log(error);
@@ -127,15 +163,43 @@ class ModifyGroup extends React.Component {
         console.log(error);
       });
   }
+
+  onAddMaterial = (event) => {
+    const groupId = this.state.groupId;
+    const materialId = event.target.value;
+
+    axios.put('http://localhost:8080/group/addMaterial?groupId=' + groupId + '&materialId=' + materialId)
+      .then(response => { 
+        console.log(response);
+        this.getData();
+      })
+      .catch(error => { 
+        console.log(error);
+      });
+  }
+
+  onOmitMaterial = (event) => {
+    const groupId = this.state.groupId;
+    const materialId = event.target.value;
+
+    axios.delete('http://localhost:8080/group/removeMaterial?groupId=' + groupId + '&materialId=' + materialId)
+      .then(response => { 
+        console.log(response);
+        this.getData();
+      })
+      .catch(error => { 
+        console.log(error);
+      });
+  }
   
   render() {
     return (
       <div>
         <AppTitle />
-        <h2>Modify Group Page | Group id: {this.state.groupId}</h2>
-        <MaterialList />
+        <h2>Modify Group Page </h2>
+        <MaterialList group={this.state.group} onOmitMaterial={this.onOmitMaterial}/>
         <hr />
-        <MaterialSearch materials={this.state.searchMaterials} searchParam={this.state.searchParam} onSearchParamChange={this.onSearchParamChange} onSearchMaterial={this.onSearchMaterial}/>
+        <MaterialSearch materials={this.state.searchMaterials} onAddMaterial={this.onAddMaterial} searchParam={this.state.searchParam} onSearchParamChange={this.onSearchParamChange} onSearchMaterial={this.onSearchMaterial}/>
         <Link to="/">Main Page</Link> | <Link to="/MaterialManagement">Material Management</Link>
       </div>
     );

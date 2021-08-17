@@ -1,5 +1,6 @@
 package com.andyshao.application.wma.neo4j.dao;
 
+import com.andyshao.application.wma.neo4j.domain.Group;
 import com.andyshao.application.wma.neo4j.domain.Material;
 import com.github.andyshao.neo4j.annotation.Neo4jDao;
 import com.github.andyshao.neo4j.annotation.Neo4jSql;
@@ -29,9 +30,12 @@ public interface MaterialDao {
             "RETURN n")
     Mono<Material> saveOrUpdate(@Param("m")Material material, CompletionStage<AsyncTransaction> tx);
 
-    @Neo4jSql(sql = "MATCH (n:Material {uuid: $m_uuid}) DELETE n")
-    Mono<Void> removeMaterial(@Param("m")Material material, CompletionStage<AsyncTransaction> tx);
+    @Neo4jSql(sql = "MATCH (n:Material {uuid: $m}) DELETE n")
+    Mono<Void> removeMaterial(@Param("m")String materialId, CompletionStage<AsyncTransaction> tx);
 
     @Neo4jSql(sql = "MATCH (n:Material) WHERE n.wordKey CONTAINS $w RETURN n")
     Flux<Material> matchByWord(@Param("w")String word, CompletionStage<AsyncTransaction> tx);
+
+    @Neo4jSql(sql = "MATCH (g:Group) -[:Include]-> (m:Material {uuid: $id}) RETURN g")
+    Flux<Group> findRelatedGroup(@Param("id")String materialId, CompletionStage<AsyncTransaction> tx);
 }

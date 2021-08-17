@@ -25,4 +25,16 @@ public class GroupController {
     public Mono<GroupInfo> findById(@PathVariable("id") String uuid) {
         return this.groupService.findById(uuid, null);
     }
+
+    @PutMapping("/addMaterial")
+    @ResponseBody
+    public Mono<Void> addMaterial(@RequestParam("groupId")String groupId, @RequestParam("materialId")String materialId) {
+        return this.groupService.addMaterial(groupId, materialId, null);
+    }
+
+    @DeleteMapping("/removeMaterial")
+    @ResponseBody
+    public Mono<Void> removeMaterial(@RequestParam("groupId")String groupId, @RequestParam("materialId")String materialId) {
+        return this.groupService.removeMaterial(groupId, materialId, null);
+    }
 }

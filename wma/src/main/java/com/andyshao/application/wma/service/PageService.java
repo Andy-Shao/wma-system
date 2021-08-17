@@ -144,9 +144,18 @@ public class PageService {
     }
 
     @Neo4jTransaction
-    public Mono<Void> removeGroup(String pageId, String groupId, final CompletionStage<AsyncTransaction> tx) {
-        return this.pageDao.removeGroup(pageId, groupId, tx)
-                .then(this.groupDao.removeGroupById(groupId, tx))
-                .then();
+    public Mono<String> removeGroup(String pageId, String groupId, final CompletionStage<AsyncTransaction> tx) {
+        return this.groupDao.findMaterials(groupId, tx)
+                .hasElements()
+                .flatMap(hasElements -> {
+                    if(!hasElements) {
+                        return this.pageDao.removeGroup(pageId, groupId, tx)
+                                .then(this.groupDao.removeGroupById(groupId, tx))
+                                .then(Mono.just("Delete Success!"));
+                    }
+                    else {
+                        return Mono.just("Group has elements, so it cannot be deleted");
+                    }
+                });
     }
 }

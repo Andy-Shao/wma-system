@@ -39,4 +39,9 @@ public class MaterialController {
     public Mono<MaterialInfo> findById(@PathVariable("id")String uuid) {
         return this.materialService.findById(uuid, null);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public Mono<String> removeMaterial(@PathVariable("id")String materialId) {
+        return this.materialService.removeMaterial(materialId, null);
+    }
 }

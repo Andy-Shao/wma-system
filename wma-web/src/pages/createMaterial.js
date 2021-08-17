@@ -91,7 +91,7 @@ class MaterialSearch extends React.Component {
         </div>
         ))}
       </td>
-      <td><Link to={'/falsifyMaterial?materialId=' + material.uuid}>Amend</Link> | <button>Del</button></td>
+      <td><Link to={'/falsifyMaterial?materialId=' + material.uuid}>Amend</Link> | <button value={material.uuid} onClick={this.props.onDeleteMaterial}>Del</button></td>
     </tr>
     ))}
     </tbody>
@@ -222,6 +222,10 @@ class CreateMaterial extends React.Component {
   }
 
   onMatchMaterial = (event) => {
+    this.matchMaterial();
+  }
+
+  matchMaterial() {
     axios.get('http://localhost:8080/material/getByWord/' + this.state.matchParam.word)
       .then(response => { 
         console.log(response);
@@ -232,6 +236,25 @@ class CreateMaterial extends React.Component {
       });
   }
 
+  onDeleteMaterial = (event) => {
+    const materialId = event.target.value;
+
+    if(window.confirm('Do you want to delete this material?')) {
+      axios.delete('http://localhost:8080/material/delete/' + materialId)
+        .then(response => { 
+          console.log(response);
+          alert(response.data);
+          this.matchMaterial();
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
+    else {
+      //Do nothing...
+    }
+  }
+
   render() {
     return (
       <div>
@@ -239,7 +262,7 @@ class CreateMaterial extends React.Component {
         <h3>Creating Material Page</h3>
         <CreateMaterialForm material={this.state.newMaterial} onClickAddWord={this.onClickAddWord} onClickAddMean={this.onClickAddMean} onClickDelWord={this.onClickDelWord} onClickDelMean={this.onClickDelMean} onWordChange={this.onWordChange} onInterpretationChange={this.onInterpretationChange} onTypeChange={this.onTypeChange} onSubmit={this.onSubmit} />
         <hr/>
-        <MaterialSearch materials={this.state.materials} onMatchParamChange={this.onMatchParamChange} onMatchMaterial={this.onMatchMaterial}/>
+        <MaterialSearch materials={this.state.materials} onMatchParamChange={this.onMatchParamChange} onMatchMaterial={this.onMatchMaterial} onDeleteMaterial={this.onDeleteMaterial}/>
         <Link to="/">Main Page</Link> | <Link to="/materialManagement">Material Management</Link>
       </div>
     );

@@ -46,4 +46,19 @@ public class MaterialService {
         return this.materialDao.findByPk(uuid, tx)
                 .map(it -> EntityOperation.copyProperties(it, new MaterialInfo()));
     }
+
+    @Neo4jTransaction
+    public Mono<String> removeMaterial(String materialId, CompletionStage<AsyncTransaction> tx) {
+        return this.materialDao.findRelatedGroup(materialId, tx)
+                .hasElements()
+                .flatMap(hasElements -> {
+                    if(!hasElements) {
+                        return this.materialDao.removeMaterial(materialId, tx)
+                                .then(Mono.just("Delete Success!"));
+                    }
+                    else {
+                        return Mono.just("Material has the relationships, consequently it cannot be left out");
+                    }
+                });
+    }
 }

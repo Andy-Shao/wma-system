@@ -44,4 +44,15 @@ public class GroupService {
                             .then(Mono.just(groupInfo));
                 });
     }
+
+    @Neo4jTransaction
+    public Mono<Void> addMaterial(String groupId, String materialId, CompletionStage<AsyncTransaction> tx) {
+        return this.groupDao.addMaterial(groupId, materialId, tx)
+                .then();
+    }
+
+    @Neo4jTransaction
+    public Mono<Void> removeMaterial(String groupId, String materialId, CompletionStage<AsyncTransaction> tx) {
+        return this.groupDao.removeMaterial(groupId, materialId, tx);
+    }
 }
