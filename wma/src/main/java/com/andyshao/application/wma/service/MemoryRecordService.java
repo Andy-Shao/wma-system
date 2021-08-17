@@ -1,6 +1,7 @@
 package com.andyshao.application.wma.service;
 
 import com.andyshao.application.wma.controller.domain.MemoryRecordInfo;
+import com.andyshao.application.wma.controller.domain.PageInfo;
 import com.andyshao.application.wma.neo4j.dao.MemoryRecordDao;
 import com.andyshao.application.wma.neo4j.dao.PageDao;
 import com.andyshao.application.wma.neo4j.domain.MemoryRecord;
@@ -36,6 +37,8 @@ public class MemoryRecordService {
     private MemoryRecordDao memoryRecordDao;
     @Autowired
     private PageDao pageDao;
+    @Autowired
+    private PageService pageService;
 
     @Neo4jTransaction
     public Flux<MemoryRecordInfo> findMemoryRecords(CompletionStage<AsyncTransaction> tx) {
@@ -135,17 +138,19 @@ public class MemoryRecordService {
                         return Mono.just("Page includes groups, therefore it cannot be omitted!");
                     }
                 });
-//        return this.pageDao.removePageById(pageId, tx)
-//                .then(this.memoryRecordDao.findRecordById(recordId, tx))
-//                .flatMap(record -> {
-//                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
-//                    final int index = pageSequence.indexOf(pageId);
-//                    if(index != -1) {
-//                        pageSequence.remove(index);
-//                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx);
-//                    }
-//                    return Mono.just(record);
-//                })
-//                .then();
+    }
+
+    @Neo4jTransaction
+    public Mono<PageInfo> studyPage(String recordId, CompletionStage<AsyncTransaction> tx) {
+        return this.memoryRecordDao.findRecordById(recordId, tx)
+                .flatMap(record -> {
+                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+                    if(CollectionOperation.isEmptyOrNull(pageSequence)) return Mono.empty();
+                    final int studyNumber = record.getStudyNumber();
+                    if(studyNumber == 0) return Mono.empty();
+                    final String pageUuid = pageSequence.get(0);
+
+                    return this.pageService.getPageInfo(pageUuid, tx);
+                });
     }
 }

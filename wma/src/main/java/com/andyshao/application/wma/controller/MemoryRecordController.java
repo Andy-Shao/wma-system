@@ -1,6 +1,7 @@
 package com.andyshao.application.wma.controller;
 
 import com.andyshao.application.wma.controller.domain.MemoryRecordInfo;
+import com.andyshao.application.wma.controller.domain.PageInfo;
 import com.andyshao.application.wma.service.MemoryRecordService;
 import com.github.andyshao.exception.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,11 @@ public class MemoryRecordController {
     @ResponseBody
     public Mono<MemoryRecordInfo> findById(@PathVariable("id") String id) {
         return this.memoryRecordService.findRecordById(id, null);
+    }
+
+    @GetMapping("/study/{id}")
+    public Mono<PageInfo> studyPage(@PathVariable("id")String recordId) {
+        return this.memoryRecordService.studyPage(recordId, null);
     }
 
     @DeleteMapping("/remove/{id}")

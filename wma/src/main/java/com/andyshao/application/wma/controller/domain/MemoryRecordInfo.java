@@ -17,6 +17,6 @@ import lombok.Setter;
 public class MemoryRecordInfo {
     private String uuid;
     private String description;
-    private String currentPageId;
+    private int studyNumber;
     private AutoIncreaseArray<String> pageSequence;
 }

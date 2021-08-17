@@ -30,35 +30,29 @@ public final class MemoryRecordDaoImpl {
         final Map<String, Value> parameters = sql.getParameters();
         final StringBuilder sqlString = new StringBuilder();
         sqlString.append("MERGE (n:MemoryRecord {uuid: $mr_uuid}) ");
-        sqlString.append("ON CREATE SET n.currentPageId = $mr_currentPageId, n.pageSequence = $mr_pageSequence, n.description = $mr_description ");
-        final String currentPageId = memoryRecord.getCurrentPageId();
+        sqlString.append("ON CREATE SET n.pageSequence = $mr_pageSequence, n.description = $mr_description, n.studyNumber = $mr_studyNumber ");
         final String description = memoryRecord.getDescription();
         final AutoIncreaseArray<String> pageSequence = memoryRecord.getPageSequence();
+        final int studyNumber = memoryRecord.getStudyNumber();
         { // ON MATCH SET
-            if(Objects.nonNull(description) || Objects.nonNull(pageSequence) || Objects.nonNull(currentPageId)) {
+            if(Objects.nonNull(description) || Objects.nonNull(pageSequence)) {
                 sqlString.append("ON MATCH SET ");
-                boolean hasHeader = false;
+                sqlString.append("n.studyNumber = $mr_studyNumber ");
                 if(Objects.nonNull(description)) {
-                    hasHeader = true;
-                    sqlString.append("n.currentPageId = $mr_currentPageId ");
+                    sqlString.append(", ");
+                    sqlString.append("n.description = $mr_description ");
                 }
                 if(Objects.nonNull(pageSequence)) {
-                    if(hasHeader) sqlString.append(", ");
-                    else hasHeader = true;
+                    sqlString.append(", ");
                     sqlString.append("n.pageSequence = $mr_pageSequence ");
-                }
-                if(Objects.nonNull(currentPageId)) {
-                    if(hasHeader) sqlString.append(", ");
-                    else hasHeader = true;
-                    sqlString.append("n.description = $mr_description ");
                 }
             }
         }
         sqlString.append("RETURN n");
         parameters.put("mr_uuid", Values.value(memoryRecord.getUuid()));
-        parameters.put("mr_currentPageId", Objects.isNull(currentPageId) ? NullValue.NULL: Values.value(currentPageId));
         parameters.put("mr_pageSequence", Values.value(pageSequence));
         parameters.put("mr_description", Objects.isNull(description)? NullValue.NULL: Values.value(description));
+        parameters.put("mr_studyNumber", Values.value(studyNumber));
         sql.setSql(sqlString.toString());
         return sql;
     }
