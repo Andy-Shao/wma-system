@@ -79,6 +79,15 @@ class MovePageForm extends React.Component {
       </td>
     </tr>
     <tr>
+      <td>Move Type:</td>
+      <td>
+        <select onChange={this.props.onMoveTypeChange}>
+          <option value="head">Head</option>
+          <option value="tail">Tail</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
       <td></td>
       <td>
         <button onClick={this.props.onMovePage}>Move Page</button>
@@ -107,7 +116,8 @@ class LaunchStudy extends React.Component {
     recordId: '',
     displayMap: new Map(),
     records: [ ],
-    targetRecordId: 'NULL'
+    targetRecordId: 'NULL',
+    moveType: 'head'
   }
 
   componentWillMount() {
@@ -209,16 +219,22 @@ class LaunchStudy extends React.Component {
     this.setState({ targetRecordId: recordId });
   }
 
+  onMoveTypeChange = (event) => {
+    const type = event.target.value;
+    this.setState({ moveType: type });
+  }
+
   onMovePage = (event) => { 
     const originalRecordId = this.state.recordId;
     const targetRecordId = this.state.targetRecordId;
     const pageId = this.state.page.uuid;
+    const moveType = this.state.moveType;
 
     if(targetRecordId === 'NULL') {
       alert('target record id:' + targetRecordId);
     }
     else {
-      axios.post('http://localhost:8080/memoryRecord/moveStudyPage?originRecordId=' + originalRecordId + '&targetRecordId=' + targetRecordId + '&pageId=' + pageId)
+      axios.post('http://localhost:8080/memoryRecord/moveStudyPage?originRecordId=' + originalRecordId + '&targetRecordId=' + targetRecordId + '&pageId=' + pageId + '&moveType=' + moveType)
         .then(response => { 
           console.log(response);
           const data = this.getDataOrEmpty(response);
@@ -241,7 +257,7 @@ class LaunchStudy extends React.Component {
         <h2>Launch Study Page | Page Id: {this.state.page.uuid}</h2>
         <PrintPage page={this.state.page} onClickShow={this.onClickShow} displayMap={this.state.displayMap} onFinishStudy={this.onFinishStudy} onStudyTomorrow={this.onStudyTomorrow} onRestudyToday={this.onRestudyToday} />
         <hr/>
-        <MovePageForm records={this.state.records} onTargetRecordIdChange={this.onTargetRecordIdChange} onMovePage={this.onMovePage}/>
+        <MovePageForm records={this.state.records} onTargetRecordIdChange={this.onTargetRecordIdChange} onMoveTypeChange={this.onMoveTypeChange} onMovePage={this.onMovePage}/>
         <Link to="/">Main Page</Link> | <Link to="/study">Study</Link>
       </div>
     );

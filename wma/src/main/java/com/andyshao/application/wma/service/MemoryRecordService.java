@@ -211,8 +211,12 @@ public class MemoryRecordService {
     }
 
     @Neo4jTransaction
-    public Mono<PageInfo> moveStudyPageToAnotherRecord(String originRecordId, String targetRecordId, String pageId,
-                                                   final CompletionStage<AsyncTransaction> tx) {
+    public Mono<PageInfo> moveStudyPageToAnotherRecord(
+            String originRecordId,
+            String targetRecordId,
+            String pageId,
+            String moveType,
+            final CompletionStage<AsyncTransaction> tx) {
         if(Objects.equals(originRecordId, targetRecordId)) return this.pageService.getPageInfo(pageId, tx);
         return this.memoryRecordDao.findRecordById(targetRecordId, tx)
                 .flatMap(targetRecord -> {
@@ -221,7 +225,8 @@ public class MemoryRecordService {
                         pageSequence = new AutoIncreaseArray<>();
                         targetRecord.setPageSequence(pageSequence);
                     }
-                    pageSequence.addHead(pageId);
+                    if(Objects.equals(moveType, "head")) pageSequence.addHead(pageId);
+                    else if(Objects.equals(moveType, "tail")) pageSequence.addTail(pageId);
                     return this.memoryRecordDao.saveOrUpdateOpt(targetRecord, tx)
                             .then();
                 })
@@ -238,7 +243,11 @@ public class MemoryRecordService {
                     }
                     pageSequence.remove(pageId);
 
-                    if(pageSequence.size() > 1) {
+                    if(newStudyNumber == 0) {
+                        return this.memoryRecordDao.saveOrUpdateOpt(originRecord, tx)
+                                .then(Mono.empty());
+                    }
+                    if(!pageSequence.isEmpty()) {
                         final String newPageId = pageSequence.get(0);
                         return this.memoryRecordDao.saveOrUpdateOpt(originRecord, tx)
                                 .then(this.pageService.getPageInfo(newPageId, tx));
