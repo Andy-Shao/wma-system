@@ -20,6 +20,7 @@ class PrintPage extends React.Component {
           <td>wordList</td>
           <td>meansList</td>
           <td>operation</td>
+          <td>quantity of words</td>
         </tr>
       </thead>
       { group.materials.map( (material, mIndex) => (
@@ -46,6 +47,7 @@ class PrintPage extends React.Component {
           ))}
           </td>
           <td><button value={group.uuid + '#' + material.uuid} onClick={this.props.onClickShow}>Show</button></td>
+          <td>{material.wordList.length}</td>
         </tr>
       </tbody>
       ))}
