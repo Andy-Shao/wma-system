@@ -209,4 +209,42 @@ public class MemoryRecordService {
                             .then(this.pageService.getPageInfo(newPageId, tx));
                 });
     }
+
+    @Neo4jTransaction
+    public Mono<PageInfo> moveStudyPageToAnotherRecord(String originRecordId, String targetRecordId, String pageId,
+                                                   final CompletionStage<AsyncTransaction> tx) {
+        if(Objects.equals(originRecordId, targetRecordId)) return this.pageService.getPageInfo(pageId, tx);
+        return this.memoryRecordDao.findRecordById(targetRecordId, tx)
+                .flatMap(targetRecord -> {
+                    AutoIncreaseArray<String> pageSequence = targetRecord.getPageSequence();
+                    if(Objects.isNull(pageSequence)) {
+                        pageSequence = new AutoIncreaseArray<>();
+                        targetRecord.setPageSequence(pageSequence);
+                    }
+                    pageSequence.addHead(pageId);
+                    return this.memoryRecordDao.saveOrUpdateOpt(targetRecord, tx)
+                            .then();
+                })
+                .then(this.memoryRecordDao.findRecordById(originRecordId, tx))
+                .<PageInfo>flatMap(originRecord -> {
+                    final int studyNumber = originRecord.getStudyNumber();
+                    int newStudyNumber = Math.max(0, studyNumber - 1);
+                    originRecord.setStudyNumber(newStudyNumber);
+
+                    final AutoIncreaseArray<String> pageSequence = originRecord.getPageSequence();
+                    if(CollectionOperation.isEmptyOrNull(pageSequence)) {
+                        return this.memoryRecordDao.saveOrUpdateOpt(originRecord, tx)
+                                .then(Mono.empty());
+                    }
+                    pageSequence.remove(pageId);
+
+                    if(pageSequence.size() > 1) {
+                        final String newPageId = pageSequence.get(0);
+                        return this.memoryRecordDao.saveOrUpdateOpt(originRecord, tx)
+                                .then(this.pageService.getPageInfo(newPageId, tx));
+                    }
+                    else return this.memoryRecordDao.saveOrUpdateOpt(originRecord, tx)
+                            .then(Mono.empty());
+                });
+    }
 }

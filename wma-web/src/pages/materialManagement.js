@@ -184,6 +184,7 @@ class MaterialManagement extends React.Component {
       axios.put('http://localhost:8080/page/addGroup?pageId=' + currentPageId)
         .then(response => { 
           console.log(response);
+          alert('Add success');
           this.getPageInfo(currentPageId);
         })
         .catch(error => { 

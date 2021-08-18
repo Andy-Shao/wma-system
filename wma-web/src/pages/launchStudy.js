@@ -61,6 +61,36 @@ class PrintPage extends React.Component {
   }
 }
 
+class MovePageForm extends React.Component {
+  render() {
+    return (
+    <div>
+    <table>
+    <tbody>
+    <tr>
+      <td>Target Recrod:</td>
+      <td>
+        <select onChange={this.props.onTargetRecordIdChange}>
+          <option value="NULL"></option>
+          { this.props.records.map( (record) => (
+          <option value={record.uuid}>{record.description}</option>
+          ))}
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <button onClick={this.props.onMovePage}>Move Page</button>
+      </td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    );
+  }
+}
+
 class LaunchStudy extends React.Component {
   state = { 
     page: { 
@@ -75,7 +105,9 @@ class LaunchStudy extends React.Component {
       }]
     },
     recordId: '',
-    displayMap: new Map()
+    displayMap: new Map(),
+    records: [ ],
+    targetRecordId: 'NULL'
   }
 
   componentWillMount() {
@@ -92,6 +124,15 @@ class LaunchStudy extends React.Component {
         console.log(response);
         const data = this.getDataOrEmpty(response);
         this.setState({ page: data });
+      })
+      .catch(error => { 
+        console.log(error);
+      });
+    
+    axios.get('http://localhost:8080/memoryRecord/records')
+      .then(response => { 
+        console.log(response);
+        this.setState({ records: response.data });
       })
       .catch(error => { 
         console.log(error);
@@ -163,12 +204,44 @@ class LaunchStudy extends React.Component {
     this.setState({ displayMap: displayMp });
   }
 
+  onTargetRecordIdChange = (event) => {
+    const recordId = event.target.value;
+    this.setState({ targetRecordId: recordId });
+  }
+
+  onMovePage = (event) => { 
+    const originalRecordId = this.state.recordId;
+    const targetRecordId = this.state.targetRecordId;
+    const pageId = this.state.page.uuid;
+
+    if(targetRecordId === 'NULL') {
+      alert('target record id:' + targetRecordId);
+    }
+    else {
+      axios.post('http://localhost:8080/memoryRecord/moveStudyPage?originRecordId=' + originalRecordId + '&targetRecordId=' + targetRecordId + '&pageId=' + pageId)
+        .then(response => { 
+          console.log(response);
+          const data = this.getDataOrEmpty(response);
+          this.setState({ 
+            page: data,
+            displayMap: new Map()
+          });
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
+
+  }
+
   render() {
     return (
       <div>
         <AppTitle />
         <h2>Launch Study Page | Page Id: {this.state.page.uuid}</h2>
         <PrintPage page={this.state.page} onClickShow={this.onClickShow} displayMap={this.state.displayMap} onFinishStudy={this.onFinishStudy} onStudyTomorrow={this.onStudyTomorrow} onRestudyToday={this.onRestudyToday} />
+        <hr/>
+        <MovePageForm records={this.state.records} onTargetRecordIdChange={this.onTargetRecordIdChange} onMovePage={this.onMovePage}/>
         <Link to="/">Main Page</Link> | <Link to="/study">Study</Link>
       </div>
     );
