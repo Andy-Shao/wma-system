@@ -159,9 +159,9 @@ public class MemoryRecordService {
         return this.memoryRecordDao.findRecordById(recordId, tx)
                 .flatMap(record -> {
                     int studyNumber = record.getStudyNumber();
+                    if(studyNumber == 0) return Mono.empty();
                     int newStudyNumber = Math.max(0, studyNumber - 1);
                     record.setStudyNumber(newStudyNumber);
-                    if(newStudyNumber == 0) return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
 
                     final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
                     if(CollectionOperation.isEmptyOrNull(pageSequence)) {
@@ -170,6 +170,11 @@ public class MemoryRecordService {
                     }
                     if(pageSequence.size() > 1) {
                         pageSequence.move(0, pageSequence.size() - 1);
+                    }
+
+                    if(newStudyNumber == 0) {
+                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx)
+                                .then(Mono.empty());
                     }
                     final String newPageId = pageSequence.get(0);
                     return this.memoryRecordDao.saveOrUpdateOpt(record, tx)
@@ -182,9 +187,9 @@ public class MemoryRecordService {
         return this.memoryRecordDao.findRecordById(recordId, tx)
                 .flatMap(record -> {
                     final int studyNumber = record.getStudyNumber();
+                    if(studyNumber == 0) return Mono.empty();
                     int newStudyNumber = Math.max(0, studyNumber - 1);
                     record.setStudyNumber(newStudyNumber);
-                    if(newStudyNumber == 0) return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
 
                     final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
                     if(CollectionOperation.isEmptyOrNull(pageSequence)){
@@ -192,7 +197,12 @@ public class MemoryRecordService {
                         return this.memoryRecordDao.saveOrUpdateOpt(record, tx).then(Mono.empty());
                     }
                     if(pageSequence.size() > 1) {
-                        pageSequence.move(0, newStudyNumber);
+                        pageSequence.move(0, Math.min(newStudyNumber, pageSequence.size() - 1));
+                    }
+
+                    if(newStudyNumber == 0) {
+                        return this.memoryRecordDao.saveOrUpdateOpt(record, tx)
+                                .then(Mono.empty());
                     }
                     final String newPageId = pageSequence.get(0);
                     return this.memoryRecordDao.saveOrUpdateOpt(record, tx)

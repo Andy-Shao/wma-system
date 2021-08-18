@@ -36,17 +36,20 @@ public class MemoryRecordController {
     }
 
     @GetMapping("/study/{id}")
+    @ResponseBody
     public Mono<PageInfo> studyPage(@PathVariable("id")String recordId) {
         return this.memoryRecordService.studyPage(recordId, null);
     }
 
-    @PutMapping("/study/finish")
-    public Mono<PageInfo> finishStudyPage(@PathVariable("id")String recordId) {
+    @PutMapping("/finishStudy")
+    @ResponseBody
+    public Mono<PageInfo> finishStudyPage(@RequestParam("recordId")String recordId) {
         return this.memoryRecordService.finishStudyPage(recordId, null);
     }
 
-    @PutMapping("/study/rerun")
-    public Mono<PageInfo> restudyPage(@PathVariable("id")String recordId) {
+    @PutMapping("/restudyTomorrow")
+    @ResponseBody
+    public Mono<PageInfo> restudyPage(@RequestParam("recordId")String recordId) {
         return this.memoryRecordService.restudyPage(recordId, null);
     }
 

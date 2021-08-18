@@ -98,6 +98,7 @@ class Study extends React.Component {
       .catch(error => { 
         console.log(error);
       });
+      alert('Setting Success');
   }
 
   onRecordIdChange = (event) => {
