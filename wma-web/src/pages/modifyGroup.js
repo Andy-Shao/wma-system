@@ -84,7 +84,9 @@ class MaterialSearch extends React.Component {
         </div>
       ))}
       </td>
-      <td><button value={material.uuid} onClick={this.props.onAddMaterial}>Add to Group</button></td>
+      <td>
+        <button value={material.uuid} onClick={this.props.onAddMaterial}>Add to Group</button> | <Link to={'/falsifyMaterial?materialId=' + material.uuid}>Modify</Link> | <button onClick={this.props.onDeleteMaterial} value={material.uuid}>Del</button>
+      </td>
     </tr>
     ))}
     </tbody>
@@ -152,6 +154,10 @@ class ModifyGroup extends React.Component {
   }
 
   onSearchMaterial = (event) => {
+    this.searchMaterial();
+  }
+
+  searchMaterial() {
     const searchParam = this.state.searchParam;
     
     axios.get('http://localhost:8080/material/getByWord/' + searchParam.word)
@@ -191,6 +197,25 @@ class ModifyGroup extends React.Component {
         console.log(error);
       });
   }
+
+  onDeleteMaterial = (event) => {
+    const materialId = event.target.value;
+
+    if(window.confirm('Do you want to delete this material?')) {
+      axios.delete('http://localhost:8080/material/delete/' + materialId)
+        .then(response => { 
+          console.log(response);
+          alert(response.data);
+          this.searchMaterial();
+        })
+        .catch(error => { 
+          console.log(error);
+        });
+    }
+    else { 
+      // Do Nothing...
+    }
+  }
   
   render() {
     return (
@@ -199,7 +224,7 @@ class ModifyGroup extends React.Component {
         <h2>Modify Group Page </h2>
         <MaterialList group={this.state.group} onOmitMaterial={this.onOmitMaterial}/>
         <hr />
-        <MaterialSearch materials={this.state.searchMaterials} onAddMaterial={this.onAddMaterial} searchParam={this.state.searchParam} onSearchParamChange={this.onSearchParamChange} onSearchMaterial={this.onSearchMaterial}/>
+        <MaterialSearch materials={this.state.searchMaterials} onAddMaterial={this.onAddMaterial} searchParam={this.state.searchParam} onSearchParamChange={this.onSearchParamChange} onSearchMaterial={this.onSearchMaterial} onDeleteMaterial={this.onDeleteMaterial} />
         <Link to="/">Main Page</Link> | <Link to="/MaterialManagement">Material Management</Link>
       </div>
     );
