@@ -107,7 +107,7 @@ class CreateMaterial extends React.Component {
       wordList: [ '' ],
       meansList: [{ 
         interpretation: '',
-        type: 'v'
+        type: 'n'
       }]
     },
     materials: [{ 
@@ -131,7 +131,7 @@ class CreateMaterial extends React.Component {
 
   onClickAddMean = (event) => {
     const material = this.state.newMaterial;
-    material.meansList.push({ interpretation: '', type: 'v' });
+    material.meansList.push({ interpretation: '', type: 'n' });
     this.setState({ newMaterial: material });
   }
 
@@ -194,7 +194,7 @@ class CreateMaterial extends React.Component {
           wordList: [ '' ],
           meansList: [{
           interpretation: '',
-          type: 'v'
+          type: 'n'
           }]
         };
         this.setState({ newMaterial: material });

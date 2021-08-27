@@ -21,6 +21,7 @@ class PrintPage extends React.Component {
           <td>meansList</td>
           <td>operation</td>
           <td>quantity of words</td>
+          <td>Operation</td>
         </tr>
       </thead>
       { group.materials.map( (material, mIndex) => (
@@ -48,6 +49,7 @@ class PrintPage extends React.Component {
           </td>
           <td><button value={group.uuid + '#' + material.uuid} onClick={this.props.onClickShow}>Show</button></td>
           <td>{material.wordList.length}</td>
+          <td><Link to={'/falsifyMaterial?materialId=' + material.uuid}>Modify</Link></td>
         </tr>
       </tbody>
       ))}
@@ -75,9 +77,9 @@ class MovePageForm extends React.Component {
         <select onChange={this.props.onTargetRecordIdChange}>
           <option value="NULL"></option>
           { this.props.records.map( (record) => (
-          <option value={record.uuid}>{record.description}</option>
+          <option value={record.uuid}>{record.description + '(' + record.studyNumber + ')'}</option>
           ))}
-        </select>
+        </select> 
       </td>
     </tr>
     <tr>
