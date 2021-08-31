@@ -256,4 +256,17 @@ public class MemoryRecordService {
                             .then(Mono.empty());
                 });
     }
+
+    @Neo4jTransaction
+    public Mono<MemoryRecordInfo> movePage(final String recordId, String pageId, int destination, final CompletionStage<AsyncTransaction> tx) {
+        if(destination < 0) throw new IndexOutOfBoundsException("destination less than 0");
+        return this.memoryRecordDao.findRecordById(recordId, tx)
+                .flatMap(record -> {
+                    final AutoIncreaseArray<String> pageSequence = record.getPageSequence();
+                    final int index = pageSequence.indexOf(pageId);
+                    pageSequence.move(index, destination);
+                    return this.memoryRecordDao.saveOrUpdateOpt(record, tx);
+                })
+                .map(record -> EntityOperation.copyProperties(record, new MemoryRecordInfo()));
+    }
 }
