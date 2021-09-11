@@ -133,8 +133,8 @@ class FalsifyMaterial extends React.Component {
         })
         .then(response => { 
           console.log(response);
-          this.getData();
           alert('Modify Success!');
+          this.getData();
         })
         .catch(error => { 
           console.log(error);
