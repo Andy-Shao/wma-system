@@ -106,7 +106,8 @@ public class MemoryRecordService {
                                     memoryRecord.setPageSequence(pageSequence);
                                 }
                                 if(!pageSequence.contains(page.getUuid())) {
-                                    pageSequence.add(page.getUuid());
+//                                    pageSequence.add(page.getUuid());
+                                    pageSequence.addHead(page.getUuid());
                                     return this.memoryRecordDao.saveOrUpdateOpt(memoryRecord, tx);
                                 }
                                 else return Mono.just(memoryRecord);
