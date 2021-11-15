@@ -19,7 +19,7 @@ public class MoveNode extends IntegrationTest {
 
     @Test
     public void movePage() {
-        this.memoryRecordService.movePage("88023deb-1734-40b6-87af-2b3ba60227df", "fdc98fe6-f6fd-4be0-84e2-b3a9930fa4bb", 0, null)
+        this.memoryRecordService.movePage("88023deb-1734-40b6-87af-2b3ba60227df", "154eefc8-bb5d-4c68-ab5c-c7a8ace0603a", 0, null)
                 .block();
     }
 }
