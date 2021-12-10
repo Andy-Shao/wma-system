@@ -48,7 +48,7 @@ class MaterialList extends React.Component {
   render() {
     return (
     <div>
-    <h3>Page Details</h3> <button onClick={this.props.onAddGroup}>Add Group</button>
+    <h3>Page Details: { this.props.page.uuid}</h3> <button onClick={this.props.onAddGroup}>Add Group</button>
     { this.props.page.groups.map( (group, index) => (
     <div>
     <label>Group uuid: {group.uuid}</label> | <Link to={'/modifyGroup?groupId=' + group.uuid}>Amend</Link> | <button value={group.uuid} onClick={this.props.onDeleteGroup}>Delete</button>

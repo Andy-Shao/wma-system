@@ -54,12 +54,22 @@ public class MemoryRecordController {
     }
 
     @PostMapping("/moveStudyPage")
+    @ResponseBody
     public Mono<PageInfo> moveToAnotherRecord(
             @RequestParam("originRecordId")String originRecordId,
             @RequestParam("targetRecordId")String targetRecordId,
             @RequestParam("pageId")String pageId,
             @RequestParam(value = "moveType", required = false, defaultValue = "head")String moveType) {
         return this.memoryRecordService.moveStudyPageToAnotherRecord(originRecordId, targetRecordId, pageId, moveType, null);
+    }
+
+    @PostMapping("/movePage")
+    @ResponseBody
+    public Mono<MemoryRecordInfo> movePage(
+            @RequestParam("recordId")String recordId,
+            @RequestParam("pageId")String pageId,
+            @RequestParam(value = "destination", required = false, defaultValue = "0")Integer destination) {
+        return this.memoryRecordService.movePage(recordId, pageId, destination, null);
     }
 
     @DeleteMapping("/remove/{id}")
