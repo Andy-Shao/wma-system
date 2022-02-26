@@ -54,6 +54,7 @@ class PrintPage extends React.Component {
       </tbody>
       ))}
       </table>
+      <p><button onClick={this.props.onRestudyToday}>Restudy Today</button></p>
     </div>
     );
     })}
