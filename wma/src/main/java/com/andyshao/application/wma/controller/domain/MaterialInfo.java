@@ -2,10 +2,10 @@ package com.andyshao.application.wma.controller.domain;
 
 import com.andyshao.application.wma.controller.validation.annotation.NoEmptyItemList;
 import com.andyshao.application.wma.neo4j.domain.Mean;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**

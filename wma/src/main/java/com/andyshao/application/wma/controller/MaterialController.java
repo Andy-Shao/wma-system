@@ -2,12 +2,12 @@ package com.andyshao.application.wma.controller;
 
 import com.andyshao.application.wma.controller.domain.MaterialInfo;
 import com.andyshao.application.wma.service.MaterialService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 
 /**
  * Title: <br>

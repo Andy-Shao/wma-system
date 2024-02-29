@@ -1,9 +1,9 @@
 package com.andyshao.application.wma.controller.validation.annotation;
 
 import com.andyshao.application.wma.controller.validation.NoEmptyItemListValidator;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
 import java.lang.annotation.*;
 
 /**

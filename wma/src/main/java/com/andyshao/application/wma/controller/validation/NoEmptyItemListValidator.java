@@ -3,9 +3,9 @@ package com.andyshao.application.wma.controller.validation;
 import com.andyshao.application.wma.controller.validation.annotation.NoEmptyItemList;
 import com.github.andyshao.lang.StringOperation;
 import com.github.andyshao.util.CollectionOperation;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
